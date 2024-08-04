@@ -20,8 +20,8 @@ public class Comment {
     @Column(name = "content")
     private String content;
 
-    @Column(name = "like")
-    private Integer like;
+    @Column(name = "comment_like")
+    private Integer commentLike;
 
     @Column(name = "is_mine")
     private Boolean isMine;

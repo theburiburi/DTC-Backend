@@ -27,8 +27,8 @@ public class Post {
     @Column(name = "content")
     private String content;
 
-    @Column(name = "like")
-    private Integer like;
+    @Column(name = "post_like")
+    private Integer postLike;
 
     @Column(name = "comment")
     private Integer comment;
