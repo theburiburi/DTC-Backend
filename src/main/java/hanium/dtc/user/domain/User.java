@@ -1,6 +1,7 @@
 package hanium.dtc.user.domain;
 
 import hanium.dtc.community.domain.Post;
+import hanium.dtc.mypage.dto.Request.MyPageUpdateRequest;
 import hanium.dtc.travel.domain.TravelRecord;
 import jakarta.persistence.*;
 import lombok.AccessLevel;
@@ -46,4 +47,13 @@ public class User {
 
     @OneToMany(mappedBy = "user")
     private List<TravelRecord> travelRecords = new ArrayList<>();
+
+    public void update(MyPageUpdateRequest request){
+        this.name = request.name();
+        this.nickname = request.nickname();
+        this.address = request.address();
+        this.age = request.age();
+        this.gender = request.gender();
+        this.mbti = request.mbti();
+    }
 }
