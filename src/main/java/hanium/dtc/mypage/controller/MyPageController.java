@@ -17,6 +17,11 @@ public class MyPageController {
         return ResponseDto.ok(myPageService.getMyPage(1L));
     }
 
+    @GetMapping("/api/mypage/edit-profile")
+    public ResponseDto<?> getMyPageUpdate(){
+        return ResponseDto.ok(myPageService.getMyPageUpdate(1L));
+    }
+
     @PatchMapping("/api/mypage/edit-profile")
     public ResponseDto<?> updateMyPage(@RequestBody MyPageUpdateRequest request){
         myPageService.updateMyPage(request, 1L);
