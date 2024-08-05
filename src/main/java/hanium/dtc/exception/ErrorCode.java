@@ -30,6 +30,8 @@ public enum ErrorCode {
     //404
     NOT_FOUND_USER(40400, HttpStatus.NOT_FOUND, "존재하지 않는 사용자입니다."),
     NOT_FOUND_POST(40401, HttpStatus.NOT_FOUND, "존재하지 않는 게시글입니다."),
+    NOT_FOUND_TRAVEL(40402, HttpStatus.NOT_FOUND, "존재하지 않는 여행기록입니다."),
+    NOT_FOUND_TRAVELDETAIL(40403, HttpStatus.NOT_FOUND, "존재하지 않는 여행장소입니다."),
 
     //500
     INTERNAL_SERVER_ERROR(50000, HttpStatus.INTERNAL_SERVER_ERROR, "서버 내부 오류입니다"),

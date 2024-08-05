@@ -7,6 +7,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -36,10 +37,10 @@ public class RecordDetail {
     private Double lon;
 
     @Column(name = "start_at")
-    private LocalDate startAt;
+    private LocalDateTime startAt;
 
     @Column(name = "end_at")
-    private LocalDate endAt;
+    private LocalDateTime endAt;
 
     @Column(name = "day")
     private Integer day;
@@ -47,4 +48,13 @@ public class RecordDetail {
     @ManyToOne
     @JoinColumn(name = "travel_id")
     private TravelRecord travelRecord;
+
+    public void updateDetail(String title, String thema, String detailAddress,
+                             LocalDateTime startAt, LocalDateTime endAt){
+        this.title = title;
+        this.thema = thema;
+        this.detailAddress = detailAddress;
+        this.startAt = startAt;
+        this.endAt = endAt;
+    }
 }
