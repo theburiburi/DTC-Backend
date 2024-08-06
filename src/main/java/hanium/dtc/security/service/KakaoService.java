@@ -53,7 +53,7 @@ public class KakaoService {
         return kakaoTokenResponse.getAccessToken();
     }
 
-    public String getUserInfo(String accessToken) {
+    public KakaoUserInfoResponse getUserInfo(String accessToken) {
         KakaoUserInfoResponse kakaoUserInfoResponse = WebClient.create(KAUTH_USER_URL_HOST).get()
                 .uri(uriBuilder -> uriBuilder
                         .scheme("https")
@@ -71,6 +71,6 @@ public class KakaoService {
         log.info(" [Kakao Service] Created At ------> {}", kakaoUserInfoResponse.getConnectedAt());
         log.info(" [Kakao Service] Nickname ------> {}", kakaoUserInfoResponse.getKakaoAccount().getProfile().getNickname());
 
-        return null;
+        return kakaoUserInfoResponse;
     }
 }
