@@ -16,6 +16,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.LocalDate;
 import java.util.List;
 
 @Slf4j
@@ -31,8 +32,12 @@ public class TravelRecordService {
         User user = userRepository.findById(userId).orElseThrow(()
                 ->new CommonException(ErrorCode.NOT_FOUND_USER));
 
+        LocalDate filterDate = LocalDate.now();
+
         TravelRecordListResponse travelRecordListResponse = TravelRecordListResponse.builder()
                 .travelRecordResponses(user.getTravelRecords().stream()
+                        .filter(travelRecord -> travelRecord.getDepartAt().isBefore(filterDate)
+                                && travelRecord.getIsScrap().equals(Boolean.FALSE))
                                 .map(travelRecord -> TravelRecordResponse.builder()
                                         .title(travelRecord.getTitle().toString())
                                         .place(travelRecord.getPlace().toString())
@@ -40,6 +45,49 @@ public class TravelRecordService {
                                         .arriveAt(travelRecord.getArriveAt())
                                         .imageUrl(travelRecord.getImageUrl())
                                         .build())
+                        .toList()).build();
+        return travelRecordListResponse;
+    }
+
+    @Transactional(readOnly = true)
+    public TravelRecordListResponse travelPlanList(Long userId) {
+        User user = userRepository.findById(userId).orElseThrow(()
+                ->new CommonException(ErrorCode.NOT_FOUND_USER));
+
+        LocalDate filterDate = LocalDate.now();
+
+        TravelRecordListResponse travelRecordListResponse = TravelRecordListResponse.builder()
+                .travelRecordResponses(user.getTravelRecords().stream()
+                        .filter(travelRecord -> travelRecord.getDepartAt().isAfter(filterDate)
+                                && travelRecord.getIsScrap().equals(Boolean.FALSE))
+                        .map(travelRecord -> TravelRecordResponse.builder()
+                                .title(travelRecord.getTitle().toString())
+                                .place(travelRecord.getPlace().toString())
+                                .departAt(travelRecord.getDepartAt())
+                                .arriveAt(travelRecord.getArriveAt())
+                                .imageUrl(travelRecord.getImageUrl())
+                                .build())
+                        .toList()).build();
+        return travelRecordListResponse;
+    }
+
+    @Transactional(readOnly = true)
+    public TravelRecordListResponse travelScrapList(Long userId) {
+        User user = userRepository.findById(userId).orElseThrow(()
+                ->new CommonException(ErrorCode.NOT_FOUND_USER));
+
+        LocalDate filterDate = LocalDate.now();
+
+        TravelRecordListResponse travelRecordListResponse = TravelRecordListResponse.builder()
+                .travelRecordResponses(user.getTravelRecords().stream()
+                        .filter(travelRecord -> travelRecord.getIsScrap().equals(Boolean.TRUE))
+                        .map(travelRecord -> TravelRecordResponse.builder()
+                                .title(travelRecord.getTitle().toString())
+                                .place(travelRecord.getPlace().toString())
+                                .departAt(travelRecord.getDepartAt())
+                                .arriveAt(travelRecord.getArriveAt())
+                                .imageUrl(travelRecord.getImageUrl())
+                                .build())
                         .toList()).build();
         return travelRecordListResponse;
     }
