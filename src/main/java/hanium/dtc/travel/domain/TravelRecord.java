@@ -46,6 +46,10 @@ public class TravelRecord {
     @OneToMany(mappedBy = "travelRecord")
     private List<Post> posts = new ArrayList<>();
 
-    @OneToMany(mappedBy = "travelRecord")
+    @OneToMany(mappedBy = "travelRecord", cascade=CascadeType.ALL, orphanRemoval = true)
     private List<RecordDetail> recordDetails = new ArrayList<>();
+
+    public void updateTitle(String title) {
+        this.title = title;
+    }
 }

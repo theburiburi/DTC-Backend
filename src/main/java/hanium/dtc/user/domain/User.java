@@ -21,6 +21,9 @@ public class User {
     @Column(name = "id")
     private Long id;
 
+    @Column(name = "serial_id")
+    private Long serialId;
+
     @Column(name = "name")
     private String name;
 
@@ -55,5 +58,8 @@ public class User {
         this.age = request.age();
         this.gender = request.gender();
         this.mbti = request.mbti();
+      
+    public User(Long serialId) {
+        this.serialId = serialId;
     }
 }
