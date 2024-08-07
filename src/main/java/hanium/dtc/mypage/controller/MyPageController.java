@@ -12,19 +12,19 @@ import org.springframework.web.bind.annotation.*;
 public class MyPageController {
     private final MyPageService myPageService;
 
-    @GetMapping("/api/mypage")
-    public ResponseDto<?> getMyPage(){
-        return ResponseDto.ok(myPageService.getMyPage(1L));
+    @GetMapping("/api/mypage/{userId}")
+    public ResponseDto<?> getMyPage(@PathVariable Long userId){
+        return ResponseDto.ok(myPageService.getMyPage(userId));
     }
 
-    @GetMapping("/api/mypage/edit-profile")
-    public ResponseDto<?> getMyPageUpdate(){
-        return ResponseDto.ok(myPageService.getMyPageUpdate(1L));
+    @GetMapping("/api/mypage/edit-profile/{userId}")
+    public ResponseDto<?> getMyPageUpdate(@PathVariable Long userId){
+        return ResponseDto.ok(myPageService.getMyPageUpdate(userId));
     }
 
-    @PatchMapping("/api/mypage/edit-profile")
-    public ResponseDto<?> updateMyPage(@RequestBody MyPageUpdateRequest request){
-        myPageService.updateMyPage(request, 1L);
+    @PatchMapping("/api/mypage/edit-profile/{userId}")
+    public ResponseDto<?> updateMyPage(@RequestBody MyPageUpdateRequest request, @PathVariable Long userId){
+        myPageService.updateMyPage(request, userId);
         return ResponseDto.ok(null);
     }
 }
