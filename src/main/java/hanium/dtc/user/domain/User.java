@@ -20,6 +20,9 @@ public class User {
     @Column(name = "id")
     private Long id;
 
+    @Column(name = "serial_id")
+    private Long serialId;
+
     @Column(name = "name")
     private String name;
 
@@ -46,4 +49,8 @@ public class User {
 
     @OneToMany(mappedBy = "user")
     private List<TravelRecord> travelRecords = new ArrayList<>();
+
+    public User(Long serialId) {
+        this.serialId = serialId;
+    }
 }
