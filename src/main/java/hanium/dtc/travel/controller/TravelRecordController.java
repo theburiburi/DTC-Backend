@@ -22,6 +22,17 @@ public class TravelRecordController {
         return ResponseDto.ok(travelRecordService.travelRecordList(userId));
     }
 
+    @GetMapping("/mypage/plan/{userId}")
+    public ResponseDto<?> getTravelPlan(@PathVariable Long userId) {
+        return ResponseDto.ok(travelRecordService.travelPlanList(userId));
+    }
+
+    @GetMapping("/mypage/plan/{userId}")
+    public ResponseDto<?> getTravelScrap(@PathVariable Long userId) {
+        return ResponseDto.ok(travelRecordService.travelScrapList(userId));
+    }
+
+
     @GetMapping("/mypage/{travelId}/{day}")
     public ResponseDto<?> getTravelDetail(@PathVariable Long travelId, @PathVariable Integer day) {
         return ResponseDto.ok(travelRecordService.travelRecordDetail(travelId, day));
@@ -44,6 +55,16 @@ public class TravelRecordController {
 
     @DeleteMapping("mypage/record/{travelId}")
     public ResponseDto<?> deleteTravelRecord(@PathVariable Long travelId) {
+        return ResponseDto.created(travelRecordService.deleteTravelRecord(travelId));
+    }
+
+    @DeleteMapping("mypage/plan/{travelId}")
+    public ResponseDto<?> deleteTravelPlan(@PathVariable Long travelId) {
+        return ResponseDto.created(travelRecordService.deleteTravelRecord(travelId));
+    }
+
+    @DeleteMapping("mypage/scrap/{travelId}")
+    public ResponseDto<?> deleteTravelScrap(@PathVariable Long travelId) {
         return ResponseDto.created(travelRecordService.deleteTravelRecord(travelId));
     }
 
