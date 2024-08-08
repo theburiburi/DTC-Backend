@@ -51,15 +51,16 @@ public class User {
     @OneToMany(mappedBy = "user")
     private List<TravelRecord> travelRecords = new ArrayList<>();
 
-    public void update(MyPageUpdateRequest request){
+    public User(Long serialId) {
+        this.serialId = serialId;
+    }
+
+    public void update(MyPageUpdateRequest request) {
         this.name = request.name();
         this.nickname = request.nickname();
         this.address = request.address();
         this.age = request.age();
         this.gender = request.gender();
         this.mbti = request.mbti();
-      
-    public User(Long serialId) {
-        this.serialId = serialId;
     }
 }
