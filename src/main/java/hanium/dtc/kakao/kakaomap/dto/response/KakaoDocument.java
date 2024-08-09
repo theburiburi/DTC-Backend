@@ -1,4 +1,4 @@
-package hanium.dtc.kakaomap.dto.response;
+package hanium.dtc.kakao.kakaomap.dto.response;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;

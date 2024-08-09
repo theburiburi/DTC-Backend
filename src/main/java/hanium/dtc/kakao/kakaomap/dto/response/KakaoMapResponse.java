@@ -1,4 +1,4 @@
-package hanium.dtc.kakaomap.dto.response;
+package hanium.dtc.kakao.kakaomap.dto.response;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;
@@ -12,5 +12,5 @@ import java.util.List;
 @JsonIgnoreProperties(ignoreUnknown = true)
 public class KakaoMapResponse {
     @JsonProperty("documents")
-    private List<KakaoDocument> documents;
+    private List<hanium.dtc.kakaomap.dto.response.KakaoDocument> documents;
 }

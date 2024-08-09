@@ -1,4 +1,4 @@
-package hanium.dtc.kakaomap.controller;
+package hanium.dtc.kakao.kakaomap.controller;
 
 import hanium.dtc.global.ResponseDto;
 import hanium.dtc.kakaomap.service.KakaoMapService;
