@@ -2,6 +2,7 @@ package hanium.dtc.kakao.kakaomap.service;
 
 import hanium.dtc.exception.CommonException;
 import hanium.dtc.exception.ErrorCode;
+import hanium.dtc.kakao.kakaomap.dto.response.KakaoMapResponse;
 import hanium.dtc.travel.domain.RecordDetail;
 import hanium.dtc.travel.repository.RecordDetailRepository;
 import org.springframework.beans.factory.annotation.Autowired;

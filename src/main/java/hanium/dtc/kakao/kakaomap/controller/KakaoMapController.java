@@ -1,8 +1,7 @@
 package hanium.dtc.kakao.kakaomap.controller;
 
 import hanium.dtc.global.ResponseDto;
-import hanium.dtc.kakaomap.service.KakaoMapService;
-import hanium.dtc.travel.service.TravelRecordService;
+import hanium.dtc.kakao.kakaomap.service.KakaoMapService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;

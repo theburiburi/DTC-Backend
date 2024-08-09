@@ -12,5 +12,5 @@ import java.util.List;
 @JsonIgnoreProperties(ignoreUnknown = true)
 public class KakaoMapResponse {
     @JsonProperty("documents")
-    private List<hanium.dtc.kakaomap.dto.response.KakaoDocument> documents;
+    private List<KakaoDocument> documents;
 }
