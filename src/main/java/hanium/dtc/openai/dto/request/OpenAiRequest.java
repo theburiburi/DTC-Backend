@@ -1,4 +1,4 @@
-package hanium.dtc.dto.openai.request;
+package hanium.dtc.openai.dto.request;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.Builder;

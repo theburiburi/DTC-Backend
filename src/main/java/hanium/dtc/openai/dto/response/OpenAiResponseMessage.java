@@ -1,4 +1,4 @@
-package hanium.dtc.dto.openai.response;
+package hanium.dtc.openai.dto.response;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 
