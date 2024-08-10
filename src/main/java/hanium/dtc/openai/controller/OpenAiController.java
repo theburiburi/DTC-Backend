@@ -15,7 +15,7 @@ public class OpenAiController {
     private final OpenAiService openAiService;
 
     @PostMapping("/openai")
-    public ResponseDto<?> test(@RequestBody UserQuestionRequest userQuestionRequest) {
-        return ResponseDto.ok(openAiService.getListOfTravel(userQuestionRequest.question()));
+    public ResponseDto<?> getOpenAiResponse(@RequestBody UserQuestionRequest userQuestionRequest) {
+        return ResponseDto.ok(openAiService.getOpenAiResponse(1L, userQuestionRequest.question()));
     }
 }

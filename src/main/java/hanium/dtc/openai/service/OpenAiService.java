@@ -2,6 +2,8 @@ package hanium.dtc.openai.service;
 
 import hanium.dtc.exception.CommonException;
 import hanium.dtc.exception.ErrorCode;
+import hanium.dtc.openai.dto.response.PlaceDescriptionResponse;
+import hanium.dtc.openai.dto.response.TravelListResponse;
 import hanium.dtc.openai.prompt.TravelRecommendationPrompt;
 import hanium.dtc.openai.prompt.TravelDescriptionPrompt;
 import hanium.dtc.openai.dto.request.OpenAiRequest;
@@ -63,17 +65,26 @@ public class OpenAiService {
     }
 
     @Transactional
-    public String getListOfTravel(String userRequest) {
+    public void setUserState(Long userId, String userRequest, Integer userStep) {
+        User user = userRepository.findById(userId)
+                .orElseThrow(() -> new CommonException(ErrorCode.NOT_FOUND_USER));
+
+        user.setTendency(userRequest);
+        user.setQuestionStep(userStep);
+    }
+
+    @Transactional
+    public TravelListResponse getListOfTravel(Long userId, String userRequest) {
+        User user = userRepository.findById(userId)
+                .orElseThrow(() -> new CommonException(ErrorCode.NOT_FOUND_USER));
+
         String[] gptResponseList =  responseHandleService.parseFirstElement(getTravelRecommendation(userRequest));
-
         String placeDescription =  gptResponseList[0];
-        log.info("1차 검증 지점 " + placeDescription);
         String placeList = gptResponseList[1];
-        log.info("2차 검증 지점 " + placeList);
-
         String placeListWithDescription = responseHandleService.ConvertOpenAiResponseToString(getTravelDescription(placeList));
         String[] listOfEachPlace = responseHandleService.parseEachTravelPlace(placeListWithDescription);
 
+        user.setTendency(userRequest);
         for(String eachPlace : listOfEachPlace) {
             try {
                 String[] eachPlaceAndDescription = responseHandleService.parsePlaceAndDscription(eachPlace);
@@ -82,7 +93,39 @@ public class OpenAiService {
                 log.info("에러 발생함");
             }
         }
+        // setUserState(userId, userRequest, 2);
 
-        return placeDescription + " " + placeListWithDescription;
+        return TravelListResponse.builder()
+                .description(placeDescription)
+                .placeDescriptionResponses(user.getTemporaryTravels().stream()
+                        .map(temporaryTravel ->
+                                PlaceDescriptionResponse.builder()
+                                        .placeId(temporaryTravel.getId())
+                                        .place(temporaryTravel.getPlace())
+                                        .description(temporaryTravel.getDescription())
+                                        .build())
+                        .toList())
+                .build();
+    }
+
+    @Transactional
+    public String createTravelTimeTable(Long userId, String userRequest) {
+        return null;
+    }
+
+    public Object getOpenAiResponse(Long userId, String userRequest) {
+        User user = userRepository.findById(userId)
+                .orElseThrow(() -> new CommonException(ErrorCode.NOT_FOUND_USER));
+
+        switch (user.getQuestionStep()) {
+            case 1: // 첫 질문에 대한 유저의 응답
+                return getListOfTravel(userId, userRequest);
+            case 2: // 다음 스탭
+                return createTravelTimeTable(userId, userRequest);
+            default:
+                break;
+        }
+
+        return new CommonException(ErrorCode.INTERNAL_SERVER_ERROR);
     }
 }
