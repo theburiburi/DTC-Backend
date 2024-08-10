@@ -8,6 +8,7 @@ import jakarta.persistence.*;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import org.hibernate.annotations.DynamicUpdate;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -16,6 +17,7 @@ import java.util.List;
 @Entity
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @Table(name = "user")
+@DynamicUpdate
 public class User {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -46,6 +48,12 @@ public class User {
     @Column(name = "image")
     private Integer image;
 
+    @Column(name = "question_step")
+    private Integer questionStep;
+
+    @Column(name = "tendency")
+    private String tendency;
+
     @OneToMany(mappedBy = "user")
     private List<Post> posts = new ArrayList<>();
 
@@ -66,5 +74,13 @@ public class User {
         this.age = request.age();
         this.gender = request.gender();
         this.mbti = request.mbti();
+    }
+
+    public void setQuestionStep(Integer questionStep) {
+        this.questionStep = questionStep;
+    }
+
+    public void setTendency(String tendency) {
+        this.tendency = tendency;
     }
 }
