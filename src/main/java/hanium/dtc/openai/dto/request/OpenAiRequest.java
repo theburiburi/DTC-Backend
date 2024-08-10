@@ -12,14 +12,17 @@ public record OpenAiRequest (
         String model,
 
         @JsonProperty("messages")
-        List<OpenAiRequestMessage> messages
+        List<OpenAiRequestMessage> messages,
+
+        @JsonProperty("temperature")
+        Double temperature
 ) {
-        public static OpenAiRequest of(String model, List<String> roles, List<String> contents, String userRequest) {
+        public static OpenAiRequest of(String model, List<String> roles, List<String> contents, String userRequest, Double temperature) {
                 List<OpenAiRequestMessage> messages = new ArrayList<>();
                 for(int index = 0; index < roles.size(); index++) {
                         messages.add(new OpenAiRequestMessage(roles.get(index), contents.get(index)));
                 }
                 messages.add(new OpenAiRequestMessage("user", userRequest));
-                return new OpenAiRequest(model, messages);
+                return new OpenAiRequest(model, messages, temperature);
         }
 }

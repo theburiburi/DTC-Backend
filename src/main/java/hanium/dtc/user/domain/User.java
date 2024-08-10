@@ -2,6 +2,7 @@ package hanium.dtc.user.domain;
 
 import hanium.dtc.community.domain.Post;
 import hanium.dtc.mypage.dto.Request.MyPageUpdateRequest;
+import hanium.dtc.travel.domain.TemporaryTravel;
 import hanium.dtc.travel.domain.TravelRecord;
 import jakarta.persistence.*;
 import lombok.AccessLevel;
@@ -50,6 +51,9 @@ public class User {
 
     @OneToMany(mappedBy = "user")
     private List<TravelRecord> travelRecords = new ArrayList<>();
+
+    @OneToMany(mappedBy = "user")
+    private List<TemporaryTravel> temporaryTravels = new ArrayList<>();
 
     public User(Long serialId) {
         this.serialId = serialId;
