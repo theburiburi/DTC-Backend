@@ -1,4 +1,4 @@
-package hanium.dtc.config;
+package hanium.dtc.openai.prompt;
 
 import lombok.Getter;
 import lombok.Setter;
@@ -10,8 +10,8 @@ import java.util.List;
 @Getter
 @Setter
 @Configuration
-@ConfigurationProperties(prefix = "openai.prompt")
-public class OpenAiPrompt {
+@ConfigurationProperties(prefix = "openai.travel-description-prompt")
+public class TravelDescriptionPrompt {
     private List<String> roles;
     private List<String> contents;
 }
