@@ -1,7 +1,7 @@
 package hanium.dtc.user.domain;
 
 import hanium.dtc.community.domain.Post;
-import hanium.dtc.mypage.dto.Request.MyPageUpdateRequest;
+import hanium.dtc.user.dto.Request.MyPageUpdateRequest;
 import hanium.dtc.travel.domain.TemporaryTravel;
 import hanium.dtc.travel.domain.TravelRecord;
 import jakarta.persistence.*;
