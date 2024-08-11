@@ -5,11 +5,7 @@ import hanium.dtc.user.dto.Request.MyPageUpdateRequest;
 import hanium.dtc.travel.domain.TemporaryTravel;
 import hanium.dtc.travel.domain.TravelRecord;
 import jakarta.persistence.*;
-import lombok.AccessLevel;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
+import lombok.*;
 import org.hibernate.annotations.DynamicUpdate;
 
 import java.util.ArrayList;
@@ -64,8 +60,8 @@ public class User {
     @OneToMany(mappedBy = "user")
     private List<TravelRecord> travelRecords = new ArrayList<>();
 
-    @OneToMany(mappedBy = "user")
-    private List<TemporaryTravel> temporaryTravels = new ArrayList<>();
+    @OneToOne(mappedBy = "user")
+    private TemporaryTravel temporaryTravel;
 
     public User(Long serialId) {
         this.serialId = serialId;
@@ -80,11 +76,11 @@ public class User {
         this.mbti = request.mbti();
     }
 
-    public void setQuestionStep(Integer questionStep) {
+    public void updateQuestionStep(Integer questionStep) {
         this.questionStep = questionStep;
     }
 
-    public void setTendency(String tendency) {
+    public void updateTendency(String tendency) {
         this.tendency = tendency;
     }
 }
