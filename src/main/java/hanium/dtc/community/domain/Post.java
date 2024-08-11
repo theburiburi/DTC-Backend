@@ -55,4 +55,23 @@ public class Post {
 
     @OneToMany(mappedBy = "post")
     private List<Comment> comments = new ArrayList<>();
+
+    public Post(String title, String content, TravelRecord travelRecord) {
+        this.title = title;
+        this.content = content;
+        this.travelRecord = travelRecord;
+        this.isTravel = (travelRecord != null); // travelRecord가 있으면 isTravel을 true로 설정
+        this.postTime = LocalDateTime.now();
+        this.postLike = 0;
+        this.comment = 0;
+        this.scrap = 0;
+        this.isMine = true; // 기본값, true 설정
+    }
+
+    public void updatePost(String title, String content, TravelRecord travelRecord) {
+        this.title = title;
+        this.content = content;
+        this.travelRecord = travelRecord;
+        this.isTravel = (travelRecord != null);
+    }
 }
