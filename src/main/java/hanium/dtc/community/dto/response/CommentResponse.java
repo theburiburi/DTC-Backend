@@ -1,5 +1,4 @@
-package hanium.dtc.community.dto.Response;
-import hanium.dtc.user.domain.User;
+package hanium.dtc.community.dto.response;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import hanium.dtc.user.dto.Response.UserCommentResponse;
 import lombok.Builder;

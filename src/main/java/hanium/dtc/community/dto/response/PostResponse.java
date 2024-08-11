@@ -1,10 +1,9 @@
-package hanium.dtc.community.dto.Response;
+package hanium.dtc.community.dto.response;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import hanium.dtc.user.domain.User;
 import lombok.Builder;
 import java.time.LocalDateTime;
-import java.util.List;
 
 @Builder
 public record PostResponse(

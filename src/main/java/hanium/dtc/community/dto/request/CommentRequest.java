@@ -1,4 +1,4 @@
-package hanium.dtc.community.dto.Request;
+package hanium.dtc.community.dto.request;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.Builder;

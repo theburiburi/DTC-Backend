@@ -2,9 +2,8 @@ package hanium.dtc.community.service;
 
 import hanium.dtc.community.domain.Comment;
 import hanium.dtc.community.domain.Post;
-import hanium.dtc.user.domain.User;
-import hanium.dtc.community.dto.Request.CommentRequest;
-import hanium.dtc.community.dto.Response.CommentResponse;
+import hanium.dtc.community.dto.request.CommentRequest;
+import hanium.dtc.community.dto.response.CommentResponse;
 import hanium.dtc.community.repository.CommentRepository;
 import hanium.dtc.community.repository.PostRepository;
 import hanium.dtc.user.dto.Response.UserCommentResponse;
@@ -18,7 +17,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.*;
-import java.util.stream.Collectors;
 
 @Slf4j
 @Service

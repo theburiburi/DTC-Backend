@@ -1,4 +1,4 @@
-package hanium.dtc.community.dto.Response;
+package hanium.dtc.community.dto.response;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import hanium.dtc.travel.dto.response.TravelRecordResponse;
