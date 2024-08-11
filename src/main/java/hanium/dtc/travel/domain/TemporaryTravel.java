@@ -7,7 +7,10 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.List;
 
 @Getter
 @Entity
@@ -19,20 +22,31 @@ public class TemporaryTravel {
     @Column(name = "id")
     private Long id;
 
-    @Column(name = "place")
-    private String place;
+    @Column(name = "depart_at")
+    private LocalDate departAt;
 
-    @Column(name = "description")
-    private String description;
+    @Column(name = "arrive_at")
+    private LocalDate arriveAt;
 
-    @ManyToOne
+    @Column(name = "person")
+    private Integer person;
+
+    @OneToOne
     @JoinColumn(name = "user_id")
     private User user;
 
+    @OneToMany(mappedBy = "temporaryTravel")
+    private List<TemporaryPlace> temporaryPlaces = new ArrayList<>();
+
     @Builder
-    public TemporaryTravel(String place, String description, User user) {
-        this.place = place;
-        this.description = description;
+    public TemporaryTravel(LocalDate departAt, LocalDate arriveAt, User user) {
+        this.departAt = departAt;
+        this.arriveAt = arriveAt;
         this.user = user;
+        this.temporaryPlaces = null;
+    }
+
+    public void updatePerson(Integer person) {
+        this.person = person;
     }
 }
