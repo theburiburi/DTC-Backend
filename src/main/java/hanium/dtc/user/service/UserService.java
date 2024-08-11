@@ -1,7 +1,10 @@
 package hanium.dtc.user.service;
 
-import hanium.dtc.security.dto.KakaoUserInfoResponse;
-import hanium.dtc.security.service.KakaoService;
+import hanium.dtc.exception.CommonException;
+import hanium.dtc.exception.ErrorCode;
+import hanium.dtc.user.dto.Request.MyPageUpdateRequest;
+import hanium.dtc.user.dto.Response.MyPageResponse;
+import hanium.dtc.user.dto.Response.MyPageUpdateResponse;
 import hanium.dtc.user.domain.User;
 import hanium.dtc.user.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
@@ -14,18 +17,45 @@ import org.springframework.transaction.annotation.Transactional;
 @RequiredArgsConstructor
 public class UserService {
     private final UserRepository userRepository;
-    private final KakaoService kakaoService;
-    @Transactional
-    public Boolean existUserBySerialId(String code) {
-        String accessToken = kakaoService.getAccessTokenFromKakao(code);
-        KakaoUserInfoResponse kakaoUserInfoResponse = kakaoService.getUserInfo(accessToken);
-        Long serialId = kakaoUserInfoResponse.getId();
 
-        User user = userRepository.findBySerialId(serialId).orElseGet(
-                () -> userRepository.save(new User(serialId))
-        );
+    @Transactional(readOnly = true)
+    public MyPageResponse getMyPage(Long userId){
 
-        return user.getNickname() == null;
+        User user = userRepository.findById(userId)
+                .orElseThrow(()->new CommonException(ErrorCode.NOT_FOUND_USER));
+        MyPageResponse myPageResponse = MyPageResponse.builder()
+                .age(user.getAge())
+                .image(user.getImage())
+                .mbti(user.getMbti())
+                .gender(user.getGender())
+                .nickname(user.getNickname())
+                .build();
+
+        return myPageResponse;
     }
 
+    @Transactional(readOnly = true)
+    public MyPageUpdateResponse getMyPageUpdate(Long userId){
+        User user = userRepository.findById(userId)
+                .orElseThrow(()->new CommonException(ErrorCode.NOT_FOUND_USER));
+        MyPageUpdateResponse myPageUpdateResponse = MyPageUpdateResponse.builder()
+                .image(user.getImage())
+                .name(user.getName())
+                .nickname(user.getNickname())
+                .address(user.getAddress())
+                .age(user.getAge())
+                .gender(user.getGender())
+                .mbti(user.getMbti())
+                .build();
+
+        return myPageUpdateResponse;
+    }
+
+    @Transactional
+    public void updateMyPage(MyPageUpdateRequest request, Long userId){
+        User user = userRepository.findById(userId)
+                .orElseThrow(()->new CommonException(ErrorCode.NOT_FOUND_USER));
+
+        user.update(request);
+    }
 }

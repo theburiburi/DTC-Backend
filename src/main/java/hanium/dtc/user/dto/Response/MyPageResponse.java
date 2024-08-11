@@ -1,4 +1,4 @@
-package hanium.dtc.mypage.dto.Response;
+package hanium.dtc.user.dto.Response;
 
 import hanium.dtc.user.domain.User;
 import lombok.Builder;

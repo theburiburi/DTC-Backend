@@ -1,10 +1,10 @@
-package hanium.dtc.mypage.dto.Response;
+package hanium.dtc.user.dto.Request;
+
+import jakarta.persistence.Column;
 
 
-import lombok.Builder;
+public record MyPageUpdateRequest (
 
-@Builder
-public record MyPageUpdateResponse (
         String name,
         String nickname,
         String address,
@@ -12,5 +12,5 @@ public record MyPageUpdateResponse (
         Boolean gender,
         Integer mbti,
         Integer image
-
-){}
+){
+}
