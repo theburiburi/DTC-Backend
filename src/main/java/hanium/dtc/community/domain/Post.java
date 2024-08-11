@@ -39,9 +39,6 @@ public class Post {
     @Column(name = "is_travel")
     private Boolean isTravel;
 
-    @Column(name = "is_mine")
-    private Boolean isMine;
-
     @Column(name = "post_time")
     private LocalDateTime postTime;
 
@@ -65,7 +62,6 @@ public class Post {
         this.postLike = 0;
         this.comment = 0;
         this.scrap = 0;
-        this.isMine = true; // 기본값, true 설정
     }
 
     public void updatePost(String title, String content, TravelRecord travelRecord) {

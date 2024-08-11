@@ -1,9 +1,9 @@
 package hanium.dtc.community.controller;
 
 import hanium.dtc.global.ResponseDto;
-import hanium.dtc.community.dto.Request.PostRequest;
-import hanium.dtc.community.dto.Response.PostDetailResponse;
-import hanium.dtc.community.dto.Response.PostResponse;
+import hanium.dtc.community.dto.request.PostRequest;
+import hanium.dtc.community.dto.response.PostDetailResponse;
+import hanium.dtc.community.dto.response.PostResponse;
 import hanium.dtc.community.service.PostService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;

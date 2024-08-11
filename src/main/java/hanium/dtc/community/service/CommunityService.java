@@ -1,7 +1,7 @@
 package hanium.dtc.community.service;
 
 import hanium.dtc.community.domain.Post;
-import hanium.dtc.community.dto.Response.PostResponse;
+import hanium.dtc.community.dto.response.PostResponse;
 import hanium.dtc.community.repository.PostRepository;
 import hanium.dtc.user.domain.User;
 import lombok.RequiredArgsConstructor;

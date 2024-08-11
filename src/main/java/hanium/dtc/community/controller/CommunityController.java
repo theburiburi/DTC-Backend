@@ -1,6 +1,6 @@
 package hanium.dtc.community.controller;
 
-import hanium.dtc.community.dto.Response.PostResponse;
+import hanium.dtc.community.dto.response.PostResponse;
 import hanium.dtc.community.service.CommunityService;
 import hanium.dtc.global.ResponseDto;
 import lombok.extern.slf4j.Slf4j;

@@ -1,6 +1,6 @@
-package hanium.dtc.community.dto.Response;
-import hanium.dtc.user.domain.User;
+package hanium.dtc.community.dto.response;
 import com.fasterxml.jackson.annotation.JsonProperty;
+import hanium.dtc.user.dto.Response.UserCommentResponse;
 import lombok.Builder;
 import java.time.LocalDateTime;
 
@@ -11,7 +11,7 @@ public record CommentResponse(
         String content,
 
         @JsonProperty("user")
-        User user,
+        UserCommentResponse userCommentResponse,
 
         @JsonProperty("like")
         Integer like,

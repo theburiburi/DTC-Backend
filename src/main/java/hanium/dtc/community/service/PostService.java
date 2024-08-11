@@ -3,12 +3,13 @@ package hanium.dtc.community.service;
 import hanium.dtc.user.domain.User;
 import hanium.dtc.community.domain.Post;
 import hanium.dtc.travel.domain.TravelRecord;
-import hanium.dtc.community.dto.Request.PostRequest;
-import hanium.dtc.community.dto.Response.CommentResponse;
-import hanium.dtc.community.dto.Response.PostDetailResponse;
-import hanium.dtc.community.dto.Response.PostResponse;
+import hanium.dtc.community.dto.request.PostRequest;
+import hanium.dtc.community.dto.response.CommentResponse;
+import hanium.dtc.community.dto.response.PostDetailResponse;
+import hanium.dtc.community.dto.response.PostResponse;
 import hanium.dtc.travel.dto.response.TravelRecordResponse;
 import hanium.dtc.community.repository.PostRepository;
+import hanium.dtc.user.dto.Response.UserCommentResponse;
 import hanium.dtc.user.repository.UserRepository;
 import hanium.dtc.travel.repository.TravelRecordRepository;
 
@@ -89,12 +90,11 @@ public class PostService {
                 .like(post.getPostLike())
                 .comment(post.getComment())
                 .scrap(post.getScrap())
-                .isMine(post.getIsMine())
                 .travel(travelRecordResponse)
                 .comments(post.getComments().stream()
                         .map(comment -> CommentResponse.builder()
                                 .content(comment.getContent())
-                                .user(User.builder()
+                                .userCommentResponse(UserCommentResponse.builder()
                                         .nickname(comment.getUser().getNickname())
                                         .image(comment.getUser().getImage())
                                         .build())
