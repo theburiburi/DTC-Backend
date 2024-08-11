@@ -7,6 +7,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 
 import java.time.LocalDateTime;
+import java.util.List;
 
 @Getter
 @Entity
@@ -23,9 +24,6 @@ public class Comment {
 
     @Column(name = "comment_like")
     private Integer commentLike;
-
-    @Column(name = "is_mine")
-    private Boolean isMine;
 
     @Column(name = "is_reply")
     private Boolean isReply;
@@ -47,12 +45,10 @@ public class Comment {
     public Comment(String content, Boolean isReply, Long commentId, Post post) {
         this.content = content;
         this.commentLike = 0;
-        this.isMine = true; // 기본값으로 설정
         this.isReply = isReply;
         this.commentTime = LocalDateTime.now();
         this.commentId = commentId;
         this.post = post;
-
     }
 
     public void updateContent(String content) {

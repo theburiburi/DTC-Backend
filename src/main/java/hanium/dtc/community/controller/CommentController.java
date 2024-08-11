@@ -6,6 +6,7 @@ import hanium.dtc.community.dto.Response.CommentResponse;
 import hanium.dtc.community.service.CommentService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -34,8 +35,9 @@ public class CommentController {
     }
 
     @GetMapping("/{postId}")
-    public ResponseDto<List<CommentResponse>> getCommentsInPost(@PathVariable Long postId) {
-        return ResponseDto.ok(commentService.getCommentsInPost(postId));
+    public ResponseDto<List<List<CommentResponse>>> getCommentsInPost(@PathVariable Long postId) {
+        List<List<CommentResponse>> comments = commentService.getCommentsInPost(postId);
+        return ResponseDto.ok(comments);
     }
 }
 
