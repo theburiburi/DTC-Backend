@@ -10,8 +10,8 @@ import hanium.dtc.openai.dto.request.OpenAiRequest;
 import hanium.dtc.openai.dto.response.OpenAiResponse;
 import hanium.dtc.openai.prompt.TravelTendencyPrompt;
 import hanium.dtc.openai.prompt.TravelTimetablePrompt;
-import hanium.dtc.travel.domain.TemporaryPlace;
 import hanium.dtc.travel.domain.TemporaryTravel;
+import hanium.dtc.travel.repository.TemporaryPlaceRepository;
 import hanium.dtc.travel.repository.TemporaryTravelRepository;
 import hanium.dtc.travel.service.TemporaryTravelService;
 import hanium.dtc.user.domain.User;
@@ -23,6 +23,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.client.RestClient;
 
+import java.time.temporal.ChronoUnit;
 import java.util.List;
 
 @Slf4j
@@ -40,6 +41,7 @@ public class OpenAiService {
     private final TemporaryTravelService temporaryTravelService;
     private final UserRepository userRepository;
     private final TemporaryTravelRepository temporaryTravelRepository;
+    private final TemporaryPlaceRepository temporaryPlaceRepository;
 
     public String getTravelRecommendation(String userRequest) {
         return openAiRestClient.post()
@@ -65,6 +67,15 @@ public class OpenAiService {
         return openAiRestClient.post()
                 .uri("/v1/chat/completions")
                 .body(OpenAiRequest.of(openAiModel, travelTendencyPrompt.getRoles(), travelTendencyPrompt.getContents(), userRequest, 0.5))
+                .retrieve()
+                .toEntity(OpenAiResponse.class)
+                .getBody();
+    }
+
+    public OpenAiResponse getTravelTimeTable(String userRequest) {
+        return openAiRestClient.post()
+                .uri("/v1/chat/completions")
+                .body(OpenAiRequest.of(openAiModel, travelTimetablePrompt.getRoles(), travelTimetablePrompt.getContents(), userRequest, 0.5))
                 .retrieve()
                 .toEntity(OpenAiResponse.class)
                 .getBody();
@@ -116,16 +127,25 @@ public class OpenAiService {
     }
 
     @Transactional
-    public String createTravelTimeTable(Long userId, String userRequest) {
+    public OpenAiResponse createTravelTimeTable(Long userId, String userRequest) {
         User user = userRepository.findById(userId)
                 .orElseThrow(() -> new CommonException(ErrorCode.NOT_FOUND_USER));
-        List<TemporaryPlace> temporaryTravels = temporaryTravelRepository.findByUser(user).getTemporaryPlaces();
-        String placeString = "8.선호하는 여행지 목록 : ";
-        for(TemporaryPlace place : temporaryTravels) {
-            placeString += (place.getPlace() + " ");
-        }
+        TemporaryTravel temporaryTravel = temporaryTravelRepository.findByUser(user);
+        List<Long> preferPlaces = responseHandleService.parsePreferPlace(userRequest);
+        Long day = ChronoUnit.DAYS.between(temporaryTravel.getDepartAt(), temporaryTravel.getArriveAt());
+        Integer dayBetween = day.intValue();
 
-        return null;
+        String placeString = "8.선호하는 여행지 목록 : ";
+        for(Long preferplace : preferPlaces) {
+            placeString += temporaryPlaceRepository.findById(preferplace)
+                    .orElseThrow(() -> new CommonException(ErrorCode.NOT_FOUND_TEMP_PLACE))
+                    .getPlace() + ", ";
+        }
+        placeString += responseHandleService.dateToDateString(dayBetween); // 여행 날짜 추가
+        placeString += "10.인원 : " + temporaryTravel.getPerson().toString();
+        placeString = temporaryTravel.getTendency() + placeString;
+
+        return getTravelTimeTable(placeString);
     }
 
     @Transactional
