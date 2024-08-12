@@ -52,4 +52,15 @@ public class TravelRecord {
     public void updateTitle(String title) {
         this.title = title;
     }
+
+    public TravelRecord(String title, String place, LocalDate departAt, LocalDate arriveAt, String imageUrl, User user) {
+        this.title = title;
+        this.place = place;
+        this.departAt = departAt;
+        this.arriveAt = arriveAt;
+        this.imageUrl = imageUrl;
+        this.user = user;
+        this.isScrap = true;
+    }
 }
+

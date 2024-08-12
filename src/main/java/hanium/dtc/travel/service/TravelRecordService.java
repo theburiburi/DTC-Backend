@@ -1,5 +1,7 @@
 package hanium.dtc.travel.service;
 
+import hanium.dtc.community.domain.Post;
+import hanium.dtc.community.repository.PostRepository;
 import hanium.dtc.exception.CommonException;
 import hanium.dtc.exception.ErrorCode;
 import hanium.dtc.travel.domain.RecordDetail;
@@ -26,6 +28,7 @@ public class TravelRecordService {
     private final TravelRecordRepository travelRecordRepository;
     private final RecordDetailRepository recordDetailRepository;
     private final UserRepository userRepository;
+    private final PostRepository postRepository;
 
     @Transactional(readOnly = true)
     public TravelRecordListResponse travelRecordList(Long userId) {
@@ -38,13 +41,13 @@ public class TravelRecordService {
                 .travelRecordResponses(user.getTravelRecords().stream()
                         .filter(travelRecord -> travelRecord.getDepartAt().isBefore(filterDate)
                                 && travelRecord.getIsScrap().equals(Boolean.FALSE))
-                                .map(travelRecord -> TravelRecordResponse.builder()
-                                        .title(travelRecord.getTitle().toString())
-                                        .place(travelRecord.getPlace().toString())
-                                        .departAt(travelRecord.getDepartAt())
-                                        .arriveAt(travelRecord.getArriveAt())
-                                        .imageUrl(travelRecord.getImageUrl())
-                                        .build())
+                        .map(travelRecord -> TravelRecordResponse.builder()
+                                .title(travelRecord.getTitle().toString())
+                                .place(travelRecord.getPlace().toString())
+                                .departAt(travelRecord.getDepartAt())
+                                .arriveAt(travelRecord.getArriveAt())
+                                .imageUrl(travelRecord.getImageUrl())
+                                .build())
                         .toList()).build();
         return travelRecordListResponse;
     }
@@ -75,8 +78,6 @@ public class TravelRecordService {
     public TravelRecordListResponse travelScrapList(Long userId) {
         User user = userRepository.findById(userId).orElseThrow(()
                 ->new CommonException(ErrorCode.NOT_FOUND_USER));
-
-        LocalDate filterDate = LocalDate.now();
 
         TravelRecordListResponse travelRecordListResponse = TravelRecordListResponse.builder()
                 .travelRecordResponses(user.getTravelRecords().stream()
@@ -118,6 +119,41 @@ public class TravelRecordService {
     }
 
     @Transactional
+    public boolean postScrapTravelRecord(Long postId){
+        Post post = postRepository.getById(postId);
+        TravelRecord travelRecord = post.getTravelRecord();
+
+        TravelRecord newTravelRecord = new TravelRecord(
+                travelRecord.getTitle(),
+                travelRecord.getPlace(),
+                travelRecord.getDepartAt(),
+                travelRecord.getArriveAt(),
+                travelRecord.getImageUrl(),
+                travelRecord.getUser()
+        );
+
+        for (RecordDetail recordDetails : travelRecord.getRecordDetails()){
+            RecordDetail newDetail = new RecordDetail(
+                    recordDetails.getTitle(),
+                    recordDetails.getThema(),
+                    recordDetails.getDetailAddress(),
+                    recordDetails.getLat(),
+                    recordDetails.getLon(),
+                    recordDetails.getStartAt(),
+                    recordDetails.getEndAt(),
+                    recordDetails.getDay(),
+                    newTravelRecord
+            );
+            newTravelRecord.getRecordDetails().add(newDetail);
+        }
+
+
+        travelRecordRepository.save(newTravelRecord);
+        return Boolean.TRUE;
+    }
+
+
+    @Transactional
     public boolean updateTravelTitle(Long travelId, TravelTitleRequest request) {
         TravelRecord travelRecord = travelRecordRepository.findById(travelId)
                 .orElseThrow(()->new CommonException(ErrorCode.NOT_FOUND_TRAVEL));
@@ -144,6 +180,7 @@ public class TravelRecordService {
         return Boolean.TRUE;
     }
 
+
     @Transactional
     public boolean deleteRecordDetail(Long detailId) {
         RecordDetail recordDetail = recordDetailRepository.findById(detailId)
@@ -162,3 +199,4 @@ public class TravelRecordService {
         return Boolean.TRUE;
     }
 }
+

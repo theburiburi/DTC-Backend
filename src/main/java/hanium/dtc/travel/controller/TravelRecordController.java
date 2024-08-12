@@ -17,6 +17,13 @@ import java.io.IOException;
 @RequestMapping("/api")
 public class TravelRecordController {
     private final TravelRecordService travelRecordService;
+
+    @PostMapping("/mypage/record/scrap/{postId}")
+    public ResponseDto<?> postScrapRecord(@PathVariable Long postId){
+        return  ResponseDto.created(travelRecordService.postScrapTravelRecord(postId));
+    }
+
+
     @GetMapping("/mypage/record/{userId}")
     public ResponseDto<?> getTravelRecord(@PathVariable Long userId) {
         return ResponseDto.ok(travelRecordService.travelRecordList(userId));
@@ -27,7 +34,7 @@ public class TravelRecordController {
         return ResponseDto.ok(travelRecordService.travelPlanList(userId));
     }
 
-    @GetMapping("/mypage/plan/{userId}")
+    @GetMapping("/mypage/scrap/{userId}")
     public ResponseDto<?> getTravelScrap(@PathVariable Long userId) {
         return ResponseDto.ok(travelRecordService.travelScrapList(userId));
     }
@@ -69,3 +76,4 @@ public class TravelRecordController {
     }
 
 }
+
