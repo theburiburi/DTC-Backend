@@ -2,9 +2,7 @@ package hanium.dtc.travel.domain;
 
 import hanium.dtc.community.domain.Post;
 import jakarta.persistence.*;
-import lombok.AccessLevel;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
+import lombok.*;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -57,4 +55,21 @@ public class RecordDetail {
         this.startAt = startAt;
         this.endAt = endAt;
     }
+
+
+    public RecordDetail(String title, String thema, String detailAddress,
+                        Double lat, Double lon, LocalDateTime startAt, LocalDateTime endAt,
+                        Integer day, TravelRecord travelRecord) {
+        this.title = title;
+        this.thema = thema;
+        this.detailAddress = detailAddress;
+        this.lat = lat;
+        this.lon = lon;
+        this.startAt = startAt;
+        this.endAt = endAt;
+        this.day = day;
+        this.travelRecord = travelRecord;
+    }
+
 }
+
