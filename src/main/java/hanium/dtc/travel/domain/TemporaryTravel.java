@@ -31,6 +31,12 @@ public class TemporaryTravel {
     @Column(name = "person")
     private Integer person;
 
+    @Column(name = "tendency")
+    private String tendency;
+
+    @Column(name = "question_step")
+    private Integer questionStep;
+
     @OneToOne
     @JoinColumn(name = "user_id")
     private User user;
@@ -44,9 +50,19 @@ public class TemporaryTravel {
         this.arriveAt = arriveAt;
         this.user = user;
         this.temporaryPlaces = null;
+        this.tendency = "";
+        this.questionStep = 1;
     }
 
     public void updatePerson(Integer person) {
         this.person = person;
+    }
+
+    public void updateTendency(String tendency) {
+        this.tendency = tendency;
+    }
+
+    public void nextStep() {
+        this.questionStep += 1;
     }
 }

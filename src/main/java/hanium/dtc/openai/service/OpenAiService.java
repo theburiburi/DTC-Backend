@@ -11,6 +11,7 @@ import hanium.dtc.openai.dto.response.OpenAiResponse;
 import hanium.dtc.openai.prompt.TravelTendencyPrompt;
 import hanium.dtc.openai.prompt.TravelTimetablePrompt;
 import hanium.dtc.travel.domain.TemporaryPlace;
+import hanium.dtc.travel.domain.TemporaryTravel;
 import hanium.dtc.travel.repository.TemporaryTravelRepository;
 import hanium.dtc.travel.service.TemporaryTravelService;
 import hanium.dtc.user.domain.User;
@@ -70,11 +71,13 @@ public class OpenAiService {
     }
 
     @Transactional
-    public void setUserState(Long userId, String userRequest, Integer userStep) {
+    public void setTravelState(Long userId, String userRequest) {
         User user = userRepository.findById(userId)
                 .orElseThrow(() -> new CommonException(ErrorCode.NOT_FOUND_USER));
-        user.updateTendency(userRequest);
-        user.updateQuestionStep(userStep);
+        TemporaryTravel temporaryTravel = temporaryTravelRepository.findByUser(user);
+
+        temporaryTravel.updateTendency(userRequest);
+        temporaryTravel.nextStep();
     }
 
     @Transactional
@@ -89,11 +92,11 @@ public class OpenAiService {
         String placeListWithDescription = responseHandleService.ConvertOpenAiResponseToString(getTravelDescription(placeList));
         String[] listOfEachPlace = responseHandleService.parseEachTravelPlace(placeListWithDescription);
 
-        setUserState(userId, userTendency, 2);
+        setTravelState(userId, userTendency);
         for(String eachPlace : listOfEachPlace) {
             try {
                 String[] eachPlaceAndDescription = responseHandleService.parsePlaceAndDscription(eachPlace);
-                temporaryTravelService.createTemporaryPlace(1L, eachPlaceAndDescription);
+                temporaryTravelService.createTemporaryPlace(userId, eachPlaceAndDescription);
             } catch (Exception e) {
                 throw new CommonException(ErrorCode.INTERNAL_SERVER_ERROR);
             }
@@ -121,7 +124,6 @@ public class OpenAiService {
         for(TemporaryPlace place : temporaryTravels) {
             placeString += (place.getPlace() + " ");
         }
-        log.info(user.getTendency() + placeString);
 
         return null;
     }
@@ -131,7 +133,7 @@ public class OpenAiService {
         User user = userRepository.findById(userId)
                 .orElseThrow(() -> new CommonException(ErrorCode.NOT_FOUND_USER));
 
-        switch (user.getQuestionStep()) {
+        switch (temporaryTravelRepository.findByUser(user).getQuestionStep()) {
             case 1: // 첫 질문에 대한 유저의 응답
                 return getListOfTravel(userId, userRequest);
             case 2: // 다음 스탭
