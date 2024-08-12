@@ -48,12 +48,6 @@ public class User {
     @Column(name = "image")
     private Integer image;
 
-    @Column(name = "question_step")
-    private Integer questionStep;
-
-    @Column(name = "tendency")
-    private String tendency;
-
     @OneToMany(mappedBy = "user")
     private List<Post> posts = new ArrayList<>();
 
@@ -74,13 +68,5 @@ public class User {
         this.age = request.age();
         this.gender = request.gender();
         this.mbti = request.mbti();
-    }
-
-    public void updateQuestionStep(Integer questionStep) {
-        this.questionStep = questionStep;
-    }
-
-    public void updateTendency(String tendency) {
-        this.tendency = tendency;
     }
 }
