@@ -119,37 +119,42 @@ public class TravelRecordService {
     }
 
     @Transactional
-    public boolean postScrapTravelRecord(Long postId){
-        Post post = postRepository.getById(postId);
-        TravelRecord travelRecord = post.getTravelRecord();
+    public boolean toggleScrapTravelRecord(Long travelId){
 
-        TravelRecord newTravelRecord = new TravelRecord(
-                travelRecord.getTitle(),
-                travelRecord.getPlace(),
-                travelRecord.getDepartAt(),
-                travelRecord.getArriveAt(),
-                travelRecord.getImageUrl(),
-                travelRecord.getUser()
-        );
+        TravelRecord travelRecord = travelRecordRepository.findById(travelId)
+                .orElseThrow(()-> new CommonException(ErrorCode.NOT_FOUND_TRAVEL));
 
-        for (RecordDetail recordDetails : travelRecord.getRecordDetails()){
-            RecordDetail newDetail = new RecordDetail(
-                    recordDetails.getTitle(),
-                    recordDetails.getThema(),
-                    recordDetails.getDetailAddress(),
-                    recordDetails.getLat(),
-                    recordDetails.getLon(),
-                    recordDetails.getStartAt(),
-                    recordDetails.getEndAt(),
-                    recordDetails.getDay(),
-                    newTravelRecord
+        if(travelRecord.getIsScrap()==false){
+            TravelRecord newTravelRecord = new TravelRecord(
+                    travelRecord.getTitle(),
+                    travelRecord.getPlace(),
+                    travelRecord.getDepartAt(),
+                    travelRecord.getArriveAt(),
+                    travelRecord.getImageUrl(),
+                    travelRecord.getUser()
             );
-            newTravelRecord.getRecordDetails().add(newDetail);
+
+            for (RecordDetail recordDetails : travelRecord.getRecordDetails()){
+                RecordDetail newDetail = new RecordDetail(
+                        recordDetails.getTitle(),
+                        recordDetails.getThema(),
+                        recordDetails.getDetailAddress(),
+                        recordDetails.getLat(),
+                        recordDetails.getLon(),
+                        recordDetails.getStartAt(),
+                        recordDetails.getEndAt(),
+                        recordDetails.getDay(),
+                        newTravelRecord
+                );
+                newTravelRecord.getRecordDetails().add(newDetail);
+            }
+            travelRecordRepository.save(newTravelRecord);
+            return Boolean.TRUE;
         }
-
-
-        travelRecordRepository.save(newTravelRecord);
-        return Boolean.TRUE;
+        else{
+            travelRecordRepository.delete(travelRecord);
+            return Boolean.FALSE;
+        }
     }
 
 
