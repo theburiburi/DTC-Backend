@@ -1,4 +1,4 @@
-package hanium.dtc.security.dto;
+package hanium.dtc.auth.dto.response;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;
