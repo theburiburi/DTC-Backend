@@ -1,5 +1,6 @@
 package hanium.dtc.travel.controller;
 
+import hanium.dtc.annotation.UserId;
 import hanium.dtc.global.ResponseDto;
 import hanium.dtc.travel.dto.request.TemporaryTravelCreateRequest;
 import hanium.dtc.travel.service.TemporaryTravelService;
@@ -15,12 +16,16 @@ public class TemporaryTravelController {
     private final TemporaryTravelService temporaryTravelService;
 
     @PostMapping("/temp-place")
-    public ResponseDto<?> createTemporaryTravel(@RequestBody TemporaryTravelCreateRequest temporaryTravelCreateRequest) {
-        return ResponseDto.created(temporaryTravelService.createTemporaryTravel(1L, temporaryTravelCreateRequest));
+    public ResponseDto<?> createTemporaryTravel(
+            @UserId Long userId,
+            @RequestBody TemporaryTravelCreateRequest temporaryTravelCreateRequest) {
+        return ResponseDto.created(temporaryTravelService.createTemporaryTravel(userId, temporaryTravelCreateRequest));
     }
 
     @PatchMapping("/temp-place")
-    public ResponseDto<?> updateTravelPerson(@RequestParam Integer person) {
-        return ResponseDto.created(temporaryTravelService.updatePersonNumber(1L, person));
+    public ResponseDto<?> updateTravelPerson(
+            @UserId Long userId,
+            @RequestParam Integer person) {
+        return ResponseDto.created(temporaryTravelService.updatePersonNumber(userId, person));
     }
 }
