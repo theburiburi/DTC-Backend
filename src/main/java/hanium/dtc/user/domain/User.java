@@ -1,11 +1,13 @@
 package hanium.dtc.user.domain;
 
+import hanium.dtc.auth.dto.request.SignUpRequest;
 import hanium.dtc.community.domain.Post;
 import hanium.dtc.user.dto.Request.MyPageUpdateRequest;
 import hanium.dtc.travel.domain.TemporaryTravel;
 import hanium.dtc.travel.domain.TravelRecord;
 import jakarta.persistence.*;
 import lombok.*;
+import lombok.extern.slf4j.Slf4j;
 import org.hibernate.annotations.DynamicUpdate;
 
 import java.util.ArrayList;
@@ -16,8 +18,8 @@ import java.util.List;
 @Builder
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @AllArgsConstructor
-@Table(name = "user")
 @DynamicUpdate
+@Table(name = "user")
 public class User {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -48,10 +50,10 @@ public class User {
     @Column(name = "image")
     private Integer image;
 
-    @OneToMany(mappedBy = "user")
+    @OneToMany(mappedBy = "user", fetch = FetchType.LAZY, cascade=CascadeType.REMOVE)
     private List<Post> posts = new ArrayList<>();
 
-    @OneToMany(mappedBy = "user")
+    @OneToMany(mappedBy = "user", fetch = FetchType.LAZY, cascade=CascadeType.REMOVE)
     private List<TravelRecord> travelRecords = new ArrayList<>();
 
     @OneToOne(mappedBy = "user")
@@ -68,5 +70,15 @@ public class User {
         this.age = request.age();
         this.gender = request.gender();
         this.mbti = request.mbti();
+    }
+
+    public void signUpUser(SignUpRequest signUpRequest) {
+        this.name = signUpRequest.name();
+        this.nickname = signUpRequest.nickname();
+        this.age = signUpRequest.age();
+        this.address = signUpRequest.address();
+        this.gender = signUpRequest.gender();
+        this.mbti = signUpRequest.mbti();
+        this.image = signUpRequest.image();
     }
 }
