@@ -1,9 +1,9 @@
-package hanium.dtc.security.service;
+package hanium.dtc.auth.service;
 
 import hanium.dtc.exception.CommonException;
 import hanium.dtc.exception.ErrorCode;
-import hanium.dtc.security.dto.KakaoTokenResponse;
-import hanium.dtc.security.dto.KakaoUserInfoResponse;
+import hanium.dtc.auth.dto.response.KakaoTokenResponse;
+import hanium.dtc.auth.dto.response.KakaoUserInfoResponse;
 import io.netty.handler.codec.http.HttpHeaderValues;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;

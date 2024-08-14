@@ -41,7 +41,7 @@ public class TemporaryTravel {
     @JoinColumn(name = "user_id")
     private User user;
 
-    @OneToMany(mappedBy = "temporaryTravel")
+    @OneToMany(mappedBy = "temporaryTravel", fetch = FetchType.LAZY, cascade=CascadeType.REMOVE)
     private List<TemporaryPlace> temporaryPlaces = new ArrayList<>();
 
     @Builder
