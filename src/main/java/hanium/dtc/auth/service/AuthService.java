@@ -8,8 +8,6 @@ import hanium.dtc.exception.ErrorCode;
 import hanium.dtc.user.domain.User;
 import hanium.dtc.user.repository.UserRepository;
 import hanium.dtc.util.JwtUtil;
-import jakarta.persistence.EntityManager;
-import jakarta.persistence.PersistenceContext;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
@@ -22,8 +20,6 @@ public class AuthService {
     private final UserRepository userRepository;
     private final KakaoService kakaoService;
     private final JwtUtil jwtUtil;
-    @PersistenceContext
-    private EntityManager entityManager;
 
     @Transactional
     public AuthorizationResponse login(String code) {

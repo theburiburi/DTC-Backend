@@ -43,10 +43,10 @@ public class TravelRecord {
     @JoinColumn(name = "user_id")
     private User user;
 
-    @OneToMany(mappedBy = "travelRecord")
+    @OneToMany(mappedBy = "travelRecord", fetch = FetchType.LAZY, cascade = CascadeType.REMOVE)
     private List<Post> posts = new ArrayList<>();
 
-    @OneToMany(mappedBy = "travelRecord", cascade=CascadeType.ALL, orphanRemoval = true)
+    @OneToMany(mappedBy = "travelRecord", fetch = FetchType.LAZY, cascade = CascadeType.ALL, orphanRemoval = true)
     private List<RecordDetail> recordDetails = new ArrayList<>();
 
     public void updateTitle(String title) {
