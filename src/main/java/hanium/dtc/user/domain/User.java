@@ -1,7 +1,10 @@
 package hanium.dtc.user.domain;
 
 import hanium.dtc.auth.dto.request.SignUpRequest;
+import hanium.dtc.community.domain.Comment;
+import hanium.dtc.community.domain.CommentLike;
 import hanium.dtc.community.domain.Post;
+import hanium.dtc.community.domain.PostLike;
 import hanium.dtc.user.dto.Request.MyPageUpdateRequest;
 import hanium.dtc.travel.domain.TemporaryTravel;
 import hanium.dtc.travel.domain.TravelRecord;
@@ -50,13 +53,22 @@ public class User {
     @Column(name = "image")
     private Integer image;
 
-    @OneToMany(mappedBy = "user", fetch = FetchType.LAZY, cascade=CascadeType.REMOVE)
+    @OneToMany(mappedBy = "user", fetch = FetchType.LAZY, cascade = CascadeType.REMOVE)
     private List<Post> posts = new ArrayList<>();
 
-    @OneToMany(mappedBy = "user", fetch = FetchType.LAZY, cascade=CascadeType.REMOVE)
+    @OneToMany(mappedBy = "user", fetch = FetchType.LAZY, cascade = CascadeType.REMOVE)
+    private List<PostLike> postLikes = new ArrayList<>();
+
+    @OneToMany(mappedBy = "user", fetch = FetchType.LAZY, cascade = CascadeType.REMOVE)
+    private List<Comment> comments = new ArrayList<>();
+
+    @OneToMany(mappedBy = "user", fetch = FetchType.LAZY, cascade = CascadeType.REMOVE)
+    private List<CommentLike> commentLikes = new ArrayList<>();
+
+    @OneToMany(mappedBy = "user", fetch = FetchType.LAZY, cascade = CascadeType.REMOVE)
     private List<TravelRecord> travelRecords = new ArrayList<>();
 
-    @OneToOne(mappedBy = "user")
+    @OneToOne(mappedBy = "user", fetch = FetchType.LAZY, cascade = CascadeType.REMOVE)
     private TemporaryTravel temporaryTravel;
 
     public User(Long serialId) {
