@@ -1,5 +1,6 @@
 package hanium.dtc.travel.controller;
 
+import hanium.dtc.annotation.UserId;
 import hanium.dtc.global.ResponseDto;
 import hanium.dtc.travel.domain.RecordDetail;
 import hanium.dtc.travel.dto.request.TravelRecordDetailRequest;
@@ -24,18 +25,18 @@ public class TravelRecordController {
     }
 
 
-    @GetMapping("/mypage/record/{userId}")
-    public ResponseDto<?> getTravelRecord(@PathVariable Long userId) {
+    @GetMapping("/mypage/record")
+    public ResponseDto<?> getTravelRecord(@UserId Long userId) {
         return ResponseDto.ok(travelRecordService.travelRecordList(userId));
     }
 
-    @GetMapping("/mypage/plan/{userId}")
-    public ResponseDto<?> getTravelPlan(@PathVariable Long userId) {
+    @GetMapping("/mypage/plan")
+    public ResponseDto<?> getTravelPlan(@UserId Long userId) {
         return ResponseDto.ok(travelRecordService.travelPlanList(userId));
     }
 
-    @GetMapping("/mypage/scrap/{userId}")
-    public ResponseDto<?> getTravelScrap(@PathVariable Long userId) {
+    @GetMapping("/mypage/scrap")
+    public ResponseDto<?> getTravelScrap(@UserId Long userId) {
         return ResponseDto.ok(travelRecordService.travelScrapList(userId));
     }
 

@@ -1,5 +1,6 @@
 package hanium.dtc.user.controller;
 
+import hanium.dtc.annotation.UserId;
 import hanium.dtc.global.ResponseDto;
 import hanium.dtc.user.dto.Request.MyPageUpdateRequest;
 import hanium.dtc.user.service.UserService;
@@ -13,18 +14,18 @@ import org.springframework.web.bind.annotation.*;
 public class UserController {
     private final UserService userService;
 
-    @GetMapping("/api/mypage/{userId}")
-    public ResponseDto<?> getMyPage(@PathVariable Long userId){
+    @GetMapping("/api/mypage")
+    public ResponseDto<?> getMyPage(@UserId Long userId){
         return ResponseDto.ok(userService.getMyPage(userId));
     }
 
-    @GetMapping("/api/mypage/edit-profile/{userId}")
-    public ResponseDto<?> getMyPageUpdate(@PathVariable Long userId){
+    @GetMapping("/api/mypage/edit-profile")
+    public ResponseDto<?> getMyPageUpdate(@UserId Long userId){
         return ResponseDto.ok(userService.getMyPageUpdate(userId));
     }
 
-    @PatchMapping("/api/mypage/edit-profile/{userId}")
-    public ResponseDto<?> updateMyPage(@RequestBody MyPageUpdateRequest request, @PathVariable Long userId){
+    @PatchMapping("/api/mypage/edit-profile")
+    public ResponseDto<?> updateMyPage(@RequestBody MyPageUpdateRequest request, @UserId Long userId){
         userService.updateMyPage(request, userId);
         return ResponseDto.ok(null);
     }

@@ -1,5 +1,6 @@
 package hanium.dtc.community.controller;
 
+import hanium.dtc.annotation.UserId;
 import hanium.dtc.community.dto.response.LikeResponse;
 import hanium.dtc.community.service.LikeService;
 import hanium.dtc.user.domain.User;
@@ -16,7 +17,7 @@ public class LikeController {
     private final UserRepository userRepository;
 
     @PostMapping("/posts/{postId}/like")
-    public LikeResponse togglePostLike(@PathVariable Long postId, @RequestParam Long userId) {
+    public LikeResponse togglePostLike(@UserId Long userId, @PathVariable Long postId) {
         boolean isLiked = likeService.togglePostLike(postId, userId);
         return LikeResponse.builder()
                 .isLiked(isLiked)
@@ -24,7 +25,7 @@ public class LikeController {
     }
 
     @PostMapping("/comments/{commentId}/like")
-    public LikeResponse toggleCommentLike(@PathVariable Long commentId, @RequestParam Long userId) {
+    public LikeResponse toggleCommentLike(@UserId Long userId, @PathVariable Long commentId) {
         boolean isLiked = likeService.toggleCommentLike(commentId, userId);
         return LikeResponse.builder()
                 .isLiked(isLiked)
