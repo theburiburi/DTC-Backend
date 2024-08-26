@@ -79,4 +79,8 @@ public class JwtUtil implements InitializingBean {
         return principal;
     }
 
+    public Long getUserIdFromToken(String token) {
+        Claims claims = getTokenBody(token);
+        return claims.get(AuthConstant.USER_ID_CLAIM_NAME, Long.class);
+    }
 }
