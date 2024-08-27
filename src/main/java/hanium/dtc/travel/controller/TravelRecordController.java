@@ -21,8 +21,8 @@ public class TravelRecordController {
     private final TravelRecordService travelRecordService;
 
     @PostMapping("/mypage/record/scrap/{postId}")
-    public ResponseDto<ScrapResponse> toggleScrap(@PathVariable Long travelId) {
-        ScrapResponse response = travelRecordService.toggleScrapTravelRecord(travelId);
+    public ResponseDto<ScrapResponse> toggleScrap(@PathVariable Long postId) {
+        ScrapResponse response = travelRecordService.toggleScrapTravelRecord(postId);
         return ResponseDto.ok(response);
     }
 

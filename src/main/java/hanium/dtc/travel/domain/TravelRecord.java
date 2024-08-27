@@ -63,7 +63,7 @@ public class TravelRecord {
         this.arriveAt = arriveAt;
         this.imageUrl = imageUrl;
         this.user = user;
-        this.isScrap = false;
+        this.isScrap = true;
     }
 }
 
