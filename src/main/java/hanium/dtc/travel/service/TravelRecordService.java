@@ -124,7 +124,7 @@ public class TravelRecordService {
         TravelRecord travelRecord = travelRecordRepository.findById(travelId)
                 .orElseThrow(()-> new CommonException(ErrorCode.NOT_FOUND_TRAVEL));
 
-        Post relatedPost = postRepository.findByTravelId(travelRecord.getId())
+        Post relatedPost = postRepository.findByTravelRecord(travelRecord)
                 .orElseThrow(() -> new CommonException(ErrorCode.NOT_FOUND_POST));
 
         boolean isScrapped;
