@@ -1,5 +1,6 @@
 package hanium.dtc.community.service;
 
+import java.util.stream.Collectors;
 import hanium.dtc.user.domain.User;
 import hanium.dtc.community.domain.Post;
 import hanium.dtc.travel.domain.TravelRecord;
@@ -44,23 +45,6 @@ public class PostService {
         Post post = new Post(postRequest.title(), postRequest.content(), travelRecord);
         postRepository.save(post);
         return true;
-    }
-
-    @Transactional(readOnly = true)
-    public List<PostResponse> getPosts() {
-        return postRepository.findAll().stream()
-                .map(post -> PostResponse.builder()
-                        .title(post.getTitle())
-                        .user(User.builder()
-                                .nickname(post.getUser().getNickname())
-                                .image(post.getUser().getImage())
-                                .build())
-                        .like(post.getPostLike())
-                        .comment(post.getComment())
-                        .scrap(post.getScrap())
-                        .postTime(post.getPostTime())
-                        .build())
-                .collect(Collectors.toList());
     }
 
     @Transactional(readOnly = true)

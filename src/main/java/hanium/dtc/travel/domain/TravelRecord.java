@@ -6,12 +6,14 @@ import jakarta.persistence.*;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.Setter;
 
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 
 @Getter
+@Setter
 @Entity
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @Table(name = "travel_record")
@@ -36,6 +38,7 @@ public class TravelRecord {
     @Column(name = "image_url")
     private String imageUrl;
 
+    @Setter
     @Column(name = "is_scrap")
     private Boolean isScrap;
 
@@ -60,7 +63,7 @@ public class TravelRecord {
         this.arriveAt = arriveAt;
         this.imageUrl = imageUrl;
         this.user = user;
-        this.isScrap = true;
+        this.isScrap = false;
     }
 }
 

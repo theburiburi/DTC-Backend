@@ -56,7 +56,7 @@ public class CommentService {
     @Transactional
     public boolean deleteComment(Long commentId) {
         Comment comment = commentRepository.findById(commentId)
-                .orElseThrow(() -> new CommonException(ErrorCode.NOT_FOUND_POST));
+                .orElseThrow(() -> new CommonException(ErrorCode.NOT_FOUND_COMMENT));
 
         commentRepository.delete(comment);
         return true;

@@ -54,4 +54,14 @@ public class Comment {
     public void updateContent(String content) {
         this.content = content;
     }
+
+    public void incrementLike() {
+        this.commentLike += 1;
+    }
+
+    public void decrementLike() {
+        if (this.commentLike > 0) {
+            this.commentLike -= 1;
+        }
+    }
 }

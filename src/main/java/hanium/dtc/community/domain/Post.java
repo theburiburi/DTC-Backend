@@ -28,13 +28,13 @@ public class Post {
     private String content;
 
     @Column(name = "post_like")
-    private Integer postLike;
+    private Integer postLike = 0;
 
     @Column(name = "comment")
     private Integer comment;
 
     @Column(name = "scrap")
-    private Integer scrap;
+    private Integer scrap = 0;
 
     @Column(name = "is_travel")
     private Boolean isTravel;
@@ -72,5 +72,25 @@ public class Post {
         this.content = content;
         this.travelRecord = travelRecord;
         this.isTravel = (travelRecord != null);
+    }
+
+    public void incrementLike() {
+        this.postLike += 1;
+    }
+
+    public void decrementLike() {
+        if (this.postLike > 0) {
+            this.postLike -= 1;
+        }
+    }
+
+    public void incrementScrap() {
+        this.scrap += 1;
+    }
+
+    public void decrementScrap() {
+        if (this.scrap > 0) {
+            this.scrap -= 1;
+        }
     }
 }

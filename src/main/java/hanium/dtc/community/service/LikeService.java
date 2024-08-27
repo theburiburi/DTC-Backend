@@ -39,11 +39,13 @@ public class LikeService {
         Optional<PostLike> existingLike = postLikeRepository.findByUserAndPost(user, post);
         if (existingLike.isPresent()) {
             postLikeRepository.delete(existingLike.get());
-            return false;
+            post.decrementLike();
         } else {
             postLikeRepository.save(new PostLike(user, post));
-            return true;
+            post.incrementLike();
         }
+        postRepository.save(post);
+        return existingLike.isEmpty();
     }
 
         @Transactional
@@ -58,12 +60,27 @@ public class LikeService {
             Optional<CommentLike> existingLike = commentLikeRepository.findByUserAndComment(user, comment);
             if (existingLike.isPresent()) {
                 commentLikeRepository.delete(existingLike.get());
-                return false;
+                comment.decrementLike();
             } else {
                 commentLikeRepository.save(new CommentLike(user, comment));
-                return true;
+                comment.incrementLike();
             }
+            commentRepository.save(comment);
+            return existingLike.isEmpty();
         }
+    @Transactional(readOnly = true)
+    public int getPostLike(Long postId) {
+        Post post = postRepository.findById(postId)
+                .orElseThrow(() -> new CommonException(ErrorCode.NOT_FOUND_POST));
+        return post.getPostLike();
     }
+
+    @Transactional(readOnly = true)
+    public int getCommentLike(Long commentId) {
+        Comment comment = commentRepository.findById(commentId)
+                .orElseThrow(() -> new CommonException(ErrorCode.NOT_FOUND_COMMENT));
+        return comment.getCommentLike();
+    }
+}
 
 

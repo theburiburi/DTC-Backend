@@ -31,6 +31,4 @@ public class CommentLike {
         this.user = user;
         this.comment = comment;
     }
-
-    // Other methods if necessary
 }
