@@ -32,5 +32,4 @@ public class PostLike {
         this.post = post;
     }
 
-    // Other methods if necessary
 }

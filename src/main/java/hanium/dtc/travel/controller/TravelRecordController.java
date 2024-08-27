@@ -3,6 +3,7 @@ package hanium.dtc.travel.controller;
 import hanium.dtc.annotation.UserId;
 import hanium.dtc.global.ResponseDto;
 import hanium.dtc.travel.domain.RecordDetail;
+import hanium.dtc.travel.dto.response.ScrapResponse;
 import hanium.dtc.travel.dto.request.TravelRecordDetailRequest;
 import hanium.dtc.travel.dto.request.TravelTitleRequest;
 import hanium.dtc.travel.service.TravelRecordService;
@@ -20,8 +21,9 @@ public class TravelRecordController {
     private final TravelRecordService travelRecordService;
 
     @PostMapping("/mypage/record/scrap/{postId}")
-    public ResponseDto<?> togglePostScrapRecord(@PathVariable Long postId){
-        return  ResponseDto.created(travelRecordService.toggleScrapTravelRecord(postId));
+    public ResponseDto<ScrapResponse> toggleScrap(@PathVariable Long travelId) {
+        ScrapResponse response = travelRecordService.toggleScrapTravelRecord(travelId);
+        return ResponseDto.ok(response);
     }
 
 

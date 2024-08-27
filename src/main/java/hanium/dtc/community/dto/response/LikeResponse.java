@@ -6,5 +6,9 @@ import lombok.Builder;
 @Builder
 public record LikeResponse(
         @JsonProperty("isLiked")
-        boolean isLiked
+        boolean isLiked,
+
+        @JsonProperty("like")
+        int like
+
 ) {}
