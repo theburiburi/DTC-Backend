@@ -91,5 +91,13 @@ public class TravelRecordController {
         return ResponseDto.created(travelRecordService.deleteTravelRecord(travelId));
     }
 
+    // 사용자가 글을 작성할 때 TravelRecord를 선택할 수 있도록 TravelRecord 목록을 제공하는 API
+    @GetMapping
+    public ResponseDto<List<TravelRecordResponse>> getMyTravelRecords() {
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        Long userId = (Long) authentication.getPrincipal();
+        return ResponseDto.ok(travelRecordService.getMyTravelRecords(userId));
+    }
+
 }
 

@@ -253,5 +253,22 @@ public class TravelRecordService {
         travelRecordRepository.delete(travelRecord);
         return Boolean.TRUE;
     }
+    @Transactional(readOnly = true)
+    public List<TravelRecordResponse> getMyTravelRecords(Long userId) {
+        User user = userRepository.findById(userId)
+                .orElseThrow(() -> new CommonException(ErrorCode.NOT_FOUND_USER));
+
+        return travelRecordRepository.findByUser(user).stream()
+                .map(travelRecord -> TravelRecordResponse.builder()
+                        .travelRecordId(travelRecord.getId())
+                        .title(travelRecord.getTitle())
+                        .place(travelRecord.getPlace())
+                        .departAt(travelRecord.getDepartAt())
+                        .arriveAt(travelRecord.getArriveAt())
+                        .imageUrl(travelRecord.getImageUrl())
+                        .build())
+                .collect(Collectors.toList());
+    }
+
 }
 

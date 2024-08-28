@@ -21,6 +21,8 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 
 import java.util.List;
 import java.util.stream.Collectors;
@@ -37,12 +39,19 @@ public class PostService {
     @Transactional
     public boolean createPost(PostRequest postRequest) {
 
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        Long userId = (Long) authentication.getPrincipal();
+
+        User user = userRepository.findById(userId)
+                .orElseThrow(() -> new CommonException(ErrorCode.NOT_FOUND_USER));
+
         TravelRecord travelRecord = null;
         if (postRequest.travelId() != null) {
             travelRecord = travelRecordRepository.findById(postRequest.travelId())
                     .orElseThrow(() -> new CommonException(ErrorCode.NOT_FOUND_TRAVEL));
         }
         Post post = new Post(postRequest.title(), postRequest.content(), travelRecord);
+        post.setUser(user);
         postRepository.save(post);
         return true;
     }
@@ -63,36 +72,48 @@ public class PostService {
                     .imageUrl(travelRecord.getImageUrl())
                     .build();
         }
+
+        List<CommentResponse> comments = post.getComments().stream()
+                .map(comment -> CommentResponse.builder()
+                        .user(UserCommentResponse.builder()
+                                .nickname(comment.getUser().getNickname())
+                                .image(comment.getUser().getImage())
+                                .build())
+                        .content(comment.getContent())
+                        .like(comment.getCommentLike())
+                        .commentTime(comment.getCommentTime())
+                        .isReply(comment.getIsReply())
+                        .build())
+                .collect(Collectors.toList());
+
         return PostDetailResponse.builder()
-                .title(post.getTitle())
-                .content(post.getContent())
-                .user(User.builder()
+                .user(UserCommentResponse.builder()
                         .nickname(post.getUser().getNickname())
                         .image(post.getUser().getImage())
                         .build())
-                .postTime(post.getPostTime())
+                .travel(travelRecordResponse)
+                .title(post.getTitle())
+                .content(post.getContent())
                 .like(post.getPostLike())
                 .comment(post.getComment())
                 .scrap(post.getScrap())
-                .travel(travelRecordResponse)
-                .comments(post.getComments().stream()
-                        .map(comment -> CommentResponse.builder()
-                                .content(comment.getContent())
-                                .userCommentResponse(UserCommentResponse.builder()
-                                        .nickname(comment.getUser().getNickname())
-                                        .image(comment.getUser().getImage())
-                                        .build())
-                                .commentTime(comment.getCommentTime())
-                                .isReply(comment.getIsReply())
-                                .build())
-                        .collect(Collectors.toList()))
+                .postTime(post.getPostTime())
+                .comments(comments)
                 .build();
     }
 
     @Transactional
     public boolean updatePost(Long postId, PostRequest postRequest) {
+
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        Long userId = (Long) authentication.getPrincipal();
+
         Post post = postRepository.findById(postId)
                 .orElseThrow(() -> new CommonException(ErrorCode.NOT_FOUND_POST));
+
+        if (!post.getUser().getId().equals(userId)) {
+            throw new CommonException(ErrorCode.FORBIDDEN_ROLE);
+        }
 
         TravelRecord travelRecord = null;
         if (postRequest.travelId() != null) {
@@ -106,8 +127,16 @@ public class PostService {
 
     @Transactional
     public boolean deletePost(Long postId) {
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        Long userId = (Long) authentication.getPrincipal();
+
         Post post = postRepository.findById(postId)
                 .orElseThrow(() -> new CommonException(ErrorCode.NOT_FOUND_POST));
+
+        if (!post.getUser().getId().equals(userId)) {
+            throw new CommonException(ErrorCode.FORBIDDEN_ROLE);
+        }
+
         postRepository.delete(post);
         return true;
     }
