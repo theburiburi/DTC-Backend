@@ -7,10 +7,14 @@ import hanium.dtc.travel.dto.response.ScrapResponse;
 import hanium.dtc.travel.dto.request.TravelRecordDetailRequest;
 import hanium.dtc.travel.dto.request.TravelTitleRequest;
 import hanium.dtc.travel.service.TravelRecordService;
+import hanium.dtc.travel.dto.response.TravelRecordResponse;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 
+import java.util.List;
 import java.io.IOException;
 
 @Slf4j
@@ -20,8 +24,9 @@ import java.io.IOException;
 public class TravelRecordController {
     private final TravelRecordService travelRecordService;
 
-    @PostMapping("/mypage/record/scrap/{postId}")
+    @PostMapping("/mypage/record/scrap/{postId}") //뭔가 어색
     public ResponseDto<ScrapResponse> toggleScrap(@PathVariable Long postId) {
+
         ScrapResponse response = travelRecordService.toggleScrapTravelRecord(postId);
         return ResponseDto.ok(response);
     }
@@ -38,10 +43,18 @@ public class TravelRecordController {
     }
 
     @GetMapping("/mypage/scrap")
-    public ResponseDto<?> getTravelScrap(@UserId Long userId) {
-        return ResponseDto.ok(travelRecordService.travelScrapList(userId));
+    public ResponseDto<Object> getMyScrapList() {
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        Long userId = (Long) authentication.getPrincipal();
+
+        return ResponseDto.ok(travelRecordService.getMyScrapList(userId));
     }
 
+    @DeleteMapping("/mypage/scrap/{postId}")
+    public ResponseDto<ScrapResponse> removeScrap(@PathVariable Long postId) {
+        ScrapResponse response = travelRecordService.removeScrap(postId);
+        return ResponseDto.ok(response);
+    }
 
     @GetMapping("/mypage/{travelId}/{day}")
     public ResponseDto<?> getTravelDetail(@PathVariable Long travelId, @PathVariable Integer day) {
