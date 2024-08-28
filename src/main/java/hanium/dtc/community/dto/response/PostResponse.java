@@ -8,6 +8,9 @@ import java.time.LocalDateTime;
 @Builder
 public record PostResponse(
 
+        @JsonProperty("postId")
+        Long postId,
+
         @JsonProperty("title")
         String title,
 
