@@ -112,10 +112,7 @@ public class CommentService {
 
             CommentResponse response = CommentResponse.builder()
                     .content(comment.getContent())
-                    .userCommentResponse(UserCommentResponse.builder()
-                            .nickname(comment.getUser().getNickname())
-                            .image(comment.getUser().getImage())
-                            .build())
+                    .user(userCommentResponse)
                     .like(comment.getCommentLike())
                     .commentTime(comment.getCommentTime())
                     .isReply(comment.getIsReply())
