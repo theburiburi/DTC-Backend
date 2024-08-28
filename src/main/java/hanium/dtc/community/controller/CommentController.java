@@ -24,13 +24,13 @@ public class CommentController {
     }
 
     @PatchMapping("/{postId}/{commentId}")
-    public ResponseDto<?> updateComment(@PathVariable Long commentId, @RequestBody CommentRequest commentRequest) {
-        return ResponseDto.created(commentService.updateComment(commentId, commentRequest));
+    public ResponseDto<?> updateComment(@PathVariable Long postId, @PathVariable Long commentId, @RequestBody CommentRequest commentRequest) {
+        return ResponseDto.created(commentService.updateComment(postId, commentId, commentRequest));
     }
 
     @DeleteMapping("/{postId}/{commentId}")
-    public ResponseDto<?> deleteComment(@PathVariable Long commentId) {
-        return ResponseDto.created(commentService.deleteComment(commentId));
+    public ResponseDto<?> deleteComment(@PathVariable Long postId, @PathVariable Long commentId) {
+        return ResponseDto.created(commentService.deleteComment(postId, commentId));
     }
 
     @GetMapping("/{postId}")

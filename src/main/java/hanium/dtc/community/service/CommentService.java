@@ -2,6 +2,7 @@ package hanium.dtc.community.service;
 
 import hanium.dtc.community.domain.Comment;
 import hanium.dtc.community.domain.Post;
+import hanium.dtc.user.domain.User;
 import hanium.dtc.community.dto.request.CommentRequest;
 import hanium.dtc.community.dto.response.CommentResponse;
 import hanium.dtc.community.repository.CommentRepository;
@@ -15,6 +16,8 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 
 import java.util.*;
 
@@ -30,8 +33,14 @@ public class CommentService {
     @Transactional
     public boolean createComment(Long postId, CommentRequest commentRequest) {
 
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        Long userId = (Long) authentication.getPrincipal();
+
         Post post = postRepository.findById(postId)
                 .orElseThrow(() -> new CommonException(ErrorCode.NOT_FOUND_POST));
+
+        User user = userRepository.findById(userId)
+                .orElseThrow(() -> new CommonException(ErrorCode.NOT_FOUND_USER));
 
         Comment comment = new Comment(
                 commentRequest.content(),
@@ -39,14 +48,27 @@ public class CommentService {
                 commentRequest.commentId(),
                 post
         );
+        comment.setUser(user);
+
         commentRepository.save(comment);
         return true;
     }
 
     @Transactional
-    public boolean updateComment(Long commentId, CommentRequest commentRequest) {
+    public boolean updateComment(Long postId, Long commentId, CommentRequest commentRequest) {
+
+        Post post = postRepository.findById(postId)
+                .orElseThrow(() -> new CommonException(ErrorCode.NOT_FOUND_POST));
+
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        Long userId = (Long) authentication.getPrincipal();
+
         Comment comment = commentRepository.findById(commentId)
                 .orElseThrow(() -> new CommonException(ErrorCode.NOT_FOUND_COMMENT));
+
+        if (!comment.getUser().getId().equals(userId)) {
+            throw new CommonException(ErrorCode.FORBIDDEN_ROLE);
+        }
 
         comment.updateContent(commentRequest.content());
         commentRepository.save(comment);
@@ -54,9 +76,20 @@ public class CommentService {
     }
 
     @Transactional
-    public boolean deleteComment(Long commentId) {
+    public boolean deleteComment(Long postId, Long commentId) {
+
+        Post post = postRepository.findById(postId)
+                .orElseThrow(() -> new CommonException(ErrorCode.NOT_FOUND_POST));
+
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        Long userId = (Long) authentication.getPrincipal();
+
         Comment comment = commentRepository.findById(commentId)
                 .orElseThrow(() -> new CommonException(ErrorCode.NOT_FOUND_COMMENT));
+
+        if (!comment.getUser().getId().equals(userId)) {
+            throw new CommonException(ErrorCode.FORBIDDEN_ROLE);
+        }
 
         commentRepository.delete(comment);
         return true;
