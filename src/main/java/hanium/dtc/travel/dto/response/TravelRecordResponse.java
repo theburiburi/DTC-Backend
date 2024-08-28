@@ -8,6 +8,7 @@ import java.time.LocalDate;
 
 @Builder
 public record TravelRecordResponse (
+
     @JsonProperty("title")
     String title,
 
@@ -21,6 +22,10 @@ public record TravelRecordResponse (
     LocalDate arriveAt,
 
     @JsonProperty("image_url")
-    String imageUrl
+    String imageUrl,
+
+    @JsonProperty("travel_record_id")
+    Long travelRecordId
+
 ) {
 }
