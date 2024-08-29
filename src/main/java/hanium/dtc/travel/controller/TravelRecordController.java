@@ -7,10 +7,14 @@ import hanium.dtc.travel.dto.response.ScrapResponse;
 import hanium.dtc.travel.dto.request.TravelRecordDetailRequest;
 import hanium.dtc.travel.dto.request.TravelTitleRequest;
 import hanium.dtc.travel.service.TravelRecordService;
+import hanium.dtc.travel.dto.response.TravelRecordResponse;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 
+import java.util.List;
 import java.io.IOException;
 
 @Slf4j
@@ -20,9 +24,9 @@ import java.io.IOException;
 public class TravelRecordController {
     private final TravelRecordService travelRecordService;
 
-    @PostMapping("/mypage/record/scrap/{postId}")
-    public ResponseDto<ScrapResponse> toggleScrap(@PathVariable Long postId) {
-        ScrapResponse response = travelRecordService.toggleScrapTravelRecord(postId);
+    @PostMapping("/mypage/record/scrap/{travelId}")
+    public ResponseDto<ScrapResponse> toggleScrap(@PathVariable Long travelId, @UserId Long userId) {
+        ScrapResponse response = travelRecordService.toggleScrapTravelRecord(travelId, userId);
         return ResponseDto.ok(response);
     }
 
@@ -38,10 +42,15 @@ public class TravelRecordController {
     }
 
     @GetMapping("/mypage/scrap")
-    public ResponseDto<?> getTravelScrap(@UserId Long userId) {
-        return ResponseDto.ok(travelRecordService.travelScrapList(userId));
+    public ResponseDto<Object> getMyScrapList(@UserId Long userId) {
+        return ResponseDto.ok(travelRecordService.getMyScrapList(userId));
     }
 
+    @DeleteMapping("/mypage/scrap/{travelId}")
+    public ResponseDto<ScrapResponse> removeScrap(@PathVariable Long travelId,  @UserId Long userId) {
+        ScrapResponse response = travelRecordService.removeScrap(travelId, userId);
+        return ResponseDto.ok(response);
+    }
 
     @GetMapping("/mypage/{travelId}/{day}")
     public ResponseDto<?> getTravelDetail(@PathVariable Long travelId, @PathVariable Integer day) {
@@ -72,11 +81,13 @@ public class TravelRecordController {
     public ResponseDto<?> deleteTravelPlan(@PathVariable Long travelId) {
         return ResponseDto.created(travelRecordService.deleteTravelRecord(travelId));
     }
-
+/*
     @DeleteMapping("mypage/scrap/{travelId}")
     public ResponseDto<?> deleteTravelScrap(@PathVariable Long travelId) {
         return ResponseDto.created(travelRecordService.deleteTravelRecord(travelId));
     }
+
+ */
 
 }
 

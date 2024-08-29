@@ -15,7 +15,8 @@ import hanium.dtc.user.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import java.util.Optional;
 
 @Service
@@ -30,11 +31,16 @@ public class LikeService {
 
     @Transactional
     public boolean togglePostLike(Long postId, Long userId) {
+
         Post post = postRepository.findById(postId)
                 .orElseThrow(() -> new CommonException(ErrorCode.NOT_FOUND_POST));
 
         User user = userRepository.findById(userId)
                 .orElseThrow(() -> new CommonException(ErrorCode.NOT_FOUND_USER));
+
+        if (post.getUser().getId().equals(userId)) {
+            throw new CommonException(ErrorCode.SELF_ACTION_NOT_ALLOWED);
+        }
 
         Optional<PostLike> existingLike = postLikeRepository.findByUserAndPost(user, post);
         if (existingLike.isPresent()) {
@@ -48,26 +54,36 @@ public class LikeService {
         return existingLike.isEmpty();
     }
 
-        @Transactional
-        public boolean toggleCommentLike (Long commentId, Long userId)
-        {
-            Comment comment = commentRepository.findById(commentId)
-                    .orElseThrow(() -> new CommonException(ErrorCode.NOT_FOUND_COMMENT));
+    @Transactional
+    public boolean toggleCommentLike(Long postId, Long commentId, Long userId) {
 
-            User user = userRepository.findById(userId)
-                    .orElseThrow(() -> new CommonException(ErrorCode.NOT_FOUND_USER));
+        Post post = postRepository.findById(postId)
+                .orElseThrow(() -> new CommonException(ErrorCode.NOT_FOUND_POST));
 
-            Optional<CommentLike> existingLike = commentLikeRepository.findByUserAndComment(user, comment);
-            if (existingLike.isPresent()) {
-                commentLikeRepository.delete(existingLike.get());
-                comment.decrementLike();
-            } else {
-                commentLikeRepository.save(new CommentLike(user, comment));
-                comment.incrementLike();
-            }
-            commentRepository.save(comment);
-            return existingLike.isEmpty();
+        Comment comment = commentRepository.findById(commentId)
+                .orElseThrow(() -> new CommonException(ErrorCode.NOT_FOUND_COMMENT));
+
+        User user = userRepository.findById(userId)
+                .orElseThrow(() -> new CommonException(ErrorCode.NOT_FOUND_USER));
+
+        if (comment.getUser().getId().equals(userId)) {
+            throw new CommonException(ErrorCode.SELF_ACTION_NOT_ALLOWED);
         }
+
+        Optional<CommentLike> existingLike = commentLikeRepository.findByUserAndComment(user, comment);
+
+        if (existingLike.isPresent()) {
+            commentLikeRepository.delete(existingLike.get());
+            comment.decrementLike();
+
+        } else {
+            commentLikeRepository.save(new CommentLike(user, comment));
+            comment.incrementLike();
+        }
+
+        commentRepository.save(comment);
+        return existingLike.isEmpty();
+    }
     @Transactional(readOnly = true)
     public int getPostLike(Long postId) {
         Post post = postRepository.findById(postId)

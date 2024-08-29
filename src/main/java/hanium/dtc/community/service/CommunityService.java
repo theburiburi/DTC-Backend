@@ -25,6 +25,7 @@ public class CommunityService {
         PageRequest pageable = PageRequest.of(page - 1, size);
         return postRepository.findByIsTravel(false, pageable)
                 .map(post -> PostResponse.builder()
+                        .postId(post.getId())
                         .title(post.getTitle())
                         .user(User.builder()
                                 .nickname(post.getUser().getNickname())
@@ -43,6 +44,7 @@ public class CommunityService {
         PageRequest pageable = PageRequest.of(page - 1, size);
         return postRepository.findByIsTravel(true, pageable)
                 .map(post -> PostResponse.builder()
+                        .postId(post.getId())
                         .title(post.getTitle())
                         .user(User.builder()
                                 .nickname(post.getUser().getNickname())
@@ -62,6 +64,7 @@ public class CommunityService {
         PageRequest pageable = PageRequest.of(page - 1, size);
         return postRepository.findByPostLikeGreaterThanEqual(likeThreshold, pageable)
                 .map(post -> PostResponse.builder()
+                        .postId(post.getId())
                         .title(post.getTitle())
                         .user(User.builder()
                                 .nickname(post.getUser().getNickname())

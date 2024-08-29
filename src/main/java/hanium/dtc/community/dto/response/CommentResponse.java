@@ -7,22 +7,23 @@ import java.time.LocalDateTime;
 @Builder
 public record CommentResponse(
 
+        @JsonProperty("user")
+        UserCommentResponse user,
+
         @JsonProperty("content")
         String content,
-
-        @JsonProperty("user")
-        UserCommentResponse userCommentResponse,
 
         @JsonProperty("like")
         Integer like,
 
-        @JsonProperty("comment_id")
-        Long commentId,
-
-        @JsonProperty("comment_time")
+        @JsonProperty("commentTime")
         LocalDateTime commentTime,
 
-        @JsonProperty("is_reply")
-        boolean isReply
+        @JsonProperty("isReply")
+        Boolean isReply,
+
+        @JsonProperty("comment_id")
+        Long commentId
+
 ) {
 }

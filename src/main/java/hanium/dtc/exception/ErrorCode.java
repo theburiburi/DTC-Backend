@@ -27,6 +27,7 @@ public enum ErrorCode {
 
     //403
     FORBIDDEN_ROLE(40300, HttpStatus.FORBIDDEN, "권한이 존재하지 않습니다."),
+    SELF_ACTION_NOT_ALLOWED(40301, HttpStatus.FORBIDDEN, "자신이 작성한 게시물이나 댓글에 대해 이 작업을 수행할 수 없습니다."),
 
     //404
     NOT_FOUND_USER(40400, HttpStatus.NOT_FOUND, "존재하지 않는 사용자입니다."),
