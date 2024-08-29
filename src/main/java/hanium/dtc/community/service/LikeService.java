@@ -30,10 +30,7 @@ public class LikeService {
     private final UserRepository userRepository;
 
     @Transactional
-    public boolean togglePostLike(Long postId) {
-
-        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-        Long userId = (Long) authentication.getPrincipal();
+    public boolean togglePostLike(Long postId, Long userId) {
 
         Post post = postRepository.findById(postId)
                 .orElseThrow(() -> new CommonException(ErrorCode.NOT_FOUND_POST));
@@ -58,10 +55,10 @@ public class LikeService {
     }
 
     @Transactional
-    public boolean toggleCommentLike(Long commentId) {
+    public boolean toggleCommentLike(Long postId, Long commentId, Long userId) {
 
-        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-        Long userId = (Long) authentication.getPrincipal();
+        Post post = postRepository.findById(postId)
+                .orElseThrow(() -> new CommonException(ErrorCode.NOT_FOUND_POST));
 
         Comment comment = commentRepository.findById(commentId)
                 .orElseThrow(() -> new CommonException(ErrorCode.NOT_FOUND_COMMENT));
