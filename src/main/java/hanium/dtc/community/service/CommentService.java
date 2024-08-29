@@ -16,8 +16,6 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.security.core.Authentication;
-import org.springframework.security.core.context.SecurityContextHolder;
 
 import java.util.*;
 
@@ -31,10 +29,8 @@ public class CommentService {
     private final UserRepository userRepository;
 
     @Transactional
-    public boolean createComment(Long postId, CommentRequest commentRequest) {
+    public boolean createComment(Long postId, Long userId, CommentRequest commentRequest) {
 
-        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-        Long userId = (Long) authentication.getPrincipal();
 
         Post post = postRepository.findById(postId)
                 .orElseThrow(() -> new CommonException(ErrorCode.NOT_FOUND_POST));
@@ -49,19 +45,15 @@ public class CommentService {
                 post
         );
         comment.setUser(user);
-
         commentRepository.save(comment);
         return true;
     }
 
     @Transactional
-    public boolean updateComment(Long postId, Long commentId, CommentRequest commentRequest) {
+    public boolean updateComment(Long postId, Long commentId, Long userId, CommentRequest commentRequest) {
 
         Post post = postRepository.findById(postId)
                 .orElseThrow(() -> new CommonException(ErrorCode.NOT_FOUND_POST));
-
-        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-        Long userId = (Long) authentication.getPrincipal();
 
         Comment comment = commentRepository.findById(commentId)
                 .orElseThrow(() -> new CommonException(ErrorCode.NOT_FOUND_COMMENT));
@@ -76,13 +68,10 @@ public class CommentService {
     }
 
     @Transactional
-    public boolean deleteComment(Long postId, Long commentId) {
+    public boolean deleteComment(Long postId, Long commentId, Long userId) {
 
         Post post = postRepository.findById(postId)
                 .orElseThrow(() -> new CommonException(ErrorCode.NOT_FOUND_POST));
-
-        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-        Long userId = (Long) authentication.getPrincipal();
 
         Comment comment = commentRepository.findById(commentId)
                 .orElseThrow(() -> new CommonException(ErrorCode.NOT_FOUND_COMMENT));
