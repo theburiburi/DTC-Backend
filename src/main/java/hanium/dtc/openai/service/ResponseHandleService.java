@@ -5,6 +5,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
@@ -24,7 +25,23 @@ public class ResponseHandleService {
         return input.split(";");
     }
 
-    public String ConvertOpenAiResponseToString(OpenAiResponse openAiResponse) {
+    public List<String> parseTimeTable(String input) {
+        return new ArrayList<>(Arrays.asList(input.split("}")));
+    }
+
+    public List<String> parseTimeAndTravel(String input) {
+        return new ArrayList<>(Arrays.asList(input.split("&")));
+    }
+
+    public List<String> parseEachTimeOfDay(String input) {
+        return new ArrayList<>(Arrays.asList(input.split("\n")));
+    }
+
+    public List<String> parseTimeAndSchedule(String input) {
+        return new ArrayList<>(Arrays.asList(input.split("-")));
+    }
+
+    public String convertOpenAiResponseToString(OpenAiResponse openAiResponse) {
         return openAiResponse.openAiChoices().get(0).openAiResponseMessage().content();
     }
 

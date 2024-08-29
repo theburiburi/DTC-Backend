@@ -31,6 +31,9 @@ public class TemporaryTravel {
     @Column(name = "person")
     private Integer person;
 
+    @Column(name = "place")
+    private String place;
+
     @Column(name = "tendency")
     private String tendency;
 
@@ -43,6 +46,9 @@ public class TemporaryTravel {
 
     @OneToMany(mappedBy = "temporaryTravel", fetch = FetchType.LAZY, cascade=CascadeType.REMOVE)
     private List<TemporaryPlace> temporaryPlaces = new ArrayList<>();
+
+    @OneToMany(mappedBy = "temporaryTravel", fetch = FetchType.LAZY, cascade=CascadeType.REMOVE)
+    private List<TemporaryRecommend> temporaryRecommends = new ArrayList<>();
 
     @Builder
     public TemporaryTravel(LocalDate departAt, LocalDate arriveAt, User user) {
@@ -60,6 +66,10 @@ public class TemporaryTravel {
 
     public void updateTendency(String tendency) {
         this.tendency = tendency;
+    }
+
+    public void updatePlace(String place) {
+        this.place = place;
     }
 
     public void nextStep() {

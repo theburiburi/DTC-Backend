@@ -56,7 +56,6 @@ public class RecordDetail {
         this.endAt = endAt;
     }
 
-
     public RecordDetail(String title, String thema, String detailAddress,
                         Double lat, Double lon, LocalDateTime startAt, LocalDateTime endAt,
                         Integer day, TravelRecord travelRecord) {
