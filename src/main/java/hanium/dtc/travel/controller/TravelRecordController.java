@@ -24,10 +24,9 @@ import java.io.IOException;
 public class TravelRecordController {
     private final TravelRecordService travelRecordService;
 
-    @PostMapping("/mypage/record/scrap/{postId}") //뭔가 어색
-    public ResponseDto<ScrapResponse> toggleScrap(@PathVariable Long postId) {
-
-        ScrapResponse response = travelRecordService.toggleScrapTravelRecord(postId);
+    @PostMapping("/mypage/record/scrap/{travelId}")
+    public ResponseDto<ScrapResponse> toggleScrap(@PathVariable Long travelId, @UserId Long userId) {
+        ScrapResponse response = travelRecordService.toggleScrapTravelRecord(travelId, userId);
         return ResponseDto.ok(response);
     }
 
@@ -43,16 +42,13 @@ public class TravelRecordController {
     }
 
     @GetMapping("/mypage/scrap")
-    public ResponseDto<Object> getMyScrapList() {
-        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-        Long userId = (Long) authentication.getPrincipal();
-
+    public ResponseDto<Object> getMyScrapList(@UserId Long userId) {
         return ResponseDto.ok(travelRecordService.getMyScrapList(userId));
     }
 
-    @DeleteMapping("/mypage/scrap/{postId}")
-    public ResponseDto<ScrapResponse> removeScrap(@PathVariable Long postId) {
-        ScrapResponse response = travelRecordService.removeScrap(postId);
+    @DeleteMapping("/mypage/scrap/{travelId}")
+    public ResponseDto<ScrapResponse> removeScrap(@PathVariable Long travelId,  @UserId Long userId) {
+        ScrapResponse response = travelRecordService.removeScrap(travelId, userId);
         return ResponseDto.ok(response);
     }
 
@@ -85,19 +81,13 @@ public class TravelRecordController {
     public ResponseDto<?> deleteTravelPlan(@PathVariable Long travelId) {
         return ResponseDto.created(travelRecordService.deleteTravelRecord(travelId));
     }
-
+/*
     @DeleteMapping("mypage/scrap/{travelId}")
     public ResponseDto<?> deleteTravelScrap(@PathVariable Long travelId) {
         return ResponseDto.created(travelRecordService.deleteTravelRecord(travelId));
     }
 
-    // 사용자가 글을 작성할 때 TravelRecord를 선택할 수 있도록 TravelRecord 목록을 제공하는 API
-    @GetMapping
-    public ResponseDto<List<TravelRecordResponse>> getMyTravelRecords() {
-        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-        Long userId = (Long) authentication.getPrincipal();
-        return ResponseDto.ok(travelRecordService.getMyTravelRecords(userId));
-    }
+ */
 
 }
 

@@ -17,8 +17,6 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.security.core.Authentication;
-import org.springframework.security.core.context.SecurityContextHolder;
 
 import java.time.LocalDate;
 import java.util.List;
@@ -122,39 +120,33 @@ public class TravelRecordService {
     }
 
     @Transactional
-    public ScrapResponse toggleScrapTravelRecord(Long postId){
+    public ScrapResponse toggleScrapTravelRecord(Long travelId, Long userId){
 
-        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-        Long userId = (Long) authentication.getPrincipal();
-
-        Post post = postRepository.findById(postId)
-                .orElseThrow(()->new CommonException(ErrorCode.NOT_FOUND_POST));
+        TravelRecord travelRecord = travelRecordRepository.findById(travelId)
+                .orElseThrow(() -> new CommonException(ErrorCode.NOT_FOUND_TRAVEL));
 
         User user = userRepository.findById(userId)
                 .orElseThrow(() -> new CommonException(ErrorCode.NOT_FOUND_USER));
 
-        TravelRecord travelRecord = travelRecordRepository.findById(post.getTravelRecord().getId())
-                .orElseThrow(()->new CommonException(ErrorCode.NOT_FOUND_TRAVEL));
-
-        Optional<TravelRecord> existingScrap = travelRecordRepository.findByUserAndPost(user, post);
+        Optional<TravelRecord> existingScrap = travelRecordRepository.findByUserAndId(user, travelId);
 
         boolean isScrapped;
         if (existingScrap.isPresent()) {
             travelRecordRepository.delete(existingScrap.get());
-            post.decrementScrap();
+            travelRecord.getPost().decrementScrap();
             isScrapped = false;
         } else {
             TravelRecord newTravelRecord = new TravelRecord(
-                    post.getTitle(),
+                    travelRecord.getTitle(),
                     travelRecord.getPlace(),
                     travelRecord.getDepartAt(),
                     travelRecord.getArriveAt(),
                     travelRecord.getImageUrl(),
                     user,
-                    post
+                    travelRecord.getPost()
             );
 
-            for (RecordDetail recordDetails : post.getTravelRecord().getRecordDetails()){
+            for (RecordDetail recordDetails : travelRecord.getRecordDetails()){
                 RecordDetail newDetail = new RecordDetail(
                         recordDetails.getTitle(),
                         recordDetails.getThema(),
@@ -170,32 +162,29 @@ public class TravelRecordService {
             }
 
             travelRecordRepository.save(newTravelRecord);
-            post.incrementScrap();
+            travelRecord.getPost().incrementScrap();
             isScrapped = true;
         }
 
-        postRepository.save(post);
+        postRepository.save(travelRecord.getPost());
 
         return ScrapResponse.builder()
                 .isScrapped(isScrapped)
-                .scrap(post.getScrap())
+                .scrap(travelRecord.getPost().getScrap())
                 .build();
     }
 
     @Transactional
-    public ScrapResponse removeScrap(Long postId) {
+    public ScrapResponse removeScrap(Long travelId, Long userId) {
 
-        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-        Long userId = (Long) authentication.getPrincipal();
-
-        Post post = postRepository.findById(postId)
-                .orElseThrow(() -> new CommonException(ErrorCode.NOT_FOUND_POST));
 
         User user = userRepository.findById(userId)
                 .orElseThrow(() -> new CommonException(ErrorCode.NOT_FOUND_USER));
 
-        TravelRecord travelRecord = travelRecordRepository.findByUserAndPost(user, post)
+        TravelRecord travelRecord = travelRecordRepository.findByUserAndId(user, travelId)
                 .orElseThrow(() -> new CommonException(ErrorCode.NOT_FOUND_TRAVEL));
+
+        Post post = travelRecord.getPost();
 
         travelRecordRepository.delete(travelRecord);
         post.decrementScrap();
@@ -252,22 +241,6 @@ public class TravelRecordService {
 
         travelRecordRepository.delete(travelRecord);
         return Boolean.TRUE;
-    }
-    @Transactional(readOnly = true)
-    public List<TravelRecordResponse> getMyTravelRecords(Long userId) {
-        User user = userRepository.findById(userId)
-                .orElseThrow(() -> new CommonException(ErrorCode.NOT_FOUND_USER));
-
-        return travelRecordRepository.findByUser(user).stream()
-                .map(travelRecord -> TravelRecordResponse.builder()
-                        .travelRecordId(travelRecord.getId())
-                        .title(travelRecord.getTitle())
-                        .place(travelRecord.getPlace())
-                        .departAt(travelRecord.getDepartAt())
-                        .arriveAt(travelRecord.getArriveAt())
-                        .imageUrl(travelRecord.getImageUrl())
-                        .build())
-                .collect(Collectors.toList());
     }
 
 }

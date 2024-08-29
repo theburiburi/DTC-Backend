@@ -9,6 +9,6 @@ import java.util.List;
 import java.util.Optional;
 
 public interface TravelRecordRepository extends JpaRepository<TravelRecord, Long> {
-    Optional<TravelRecord> findByUserAndPost(User user, Post post);
+    Optional<TravelRecord> findByUserAndId(User user, Long travelId);
     List<TravelRecord> findByUser(User user);
 }
