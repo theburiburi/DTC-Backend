@@ -10,6 +10,9 @@ import java.util.List;
 @Builder
 public record PostDetailResponse(
 
+        @JsonProperty("id")
+        Long id,
+
         @JsonProperty("user")
         UserCommentResponse user,
 

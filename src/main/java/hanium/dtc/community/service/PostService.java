@@ -84,6 +84,7 @@ public class PostService {
                 .collect(Collectors.toList());
 
         return PostDetailResponse.builder()
+                .id(post.getId())
                 .user(UserCommentResponse.builder()
                         .nickname(post.getUser().getNickname())
                         .image(post.getUser().getImage())

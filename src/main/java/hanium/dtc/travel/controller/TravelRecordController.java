@@ -24,9 +24,9 @@ import java.io.IOException;
 public class TravelRecordController {
     private final TravelRecordService travelRecordService;
 
-    @PostMapping("/mypage/record/scrap/{travelId}")
-    public ResponseDto<ScrapResponse> toggleScrap(@PathVariable Long travelId, @UserId Long userId) {
-        ScrapResponse response = travelRecordService.toggleScrapTravelRecord(travelId, userId);
+    @PostMapping("/mypage/record/scrap/{postId}/{travelId}")
+    public ResponseDto<ScrapResponse> toggleScrap(@PathVariable Long postId, @PathVariable Long travelId, @UserId Long userId) {
+        ScrapResponse response = travelRecordService.toggleScrapTravelRecord(postId ,travelId, userId);
         return ResponseDto.ok(response);
     }
 
@@ -46,9 +46,9 @@ public class TravelRecordController {
         return ResponseDto.ok(travelRecordService.getMyScrapList(userId));
     }
 
-    @DeleteMapping("/mypage/scrap/{travelId}")
-    public ResponseDto<ScrapResponse> removeScrap(@PathVariable Long travelId,  @UserId Long userId) {
-        ScrapResponse response = travelRecordService.removeScrap(travelId, userId);
+    @DeleteMapping("/mypage/scrap/{postId}/{travelId}")
+    public ResponseDto<ScrapResponse> removeScrap(@PathVariable Long postId, @PathVariable Long travelId,  @UserId Long userId) {
+        ScrapResponse response = travelRecordService.removeScrap(postId, travelId, userId);
         return ResponseDto.ok(response);
     }
 

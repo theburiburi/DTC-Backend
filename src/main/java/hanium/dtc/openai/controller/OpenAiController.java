@@ -1,5 +1,6 @@
 package hanium.dtc.openai.controller;
 
+import hanium.dtc.annotation.UserId;
 import hanium.dtc.openai.dto.request.UserQuestionRequest;
 import hanium.dtc.global.ResponseDto;
 import hanium.dtc.openai.service.OpenAiService;
@@ -15,7 +16,7 @@ public class OpenAiController {
     private final OpenAiService openAiService;
 
     @PostMapping("/openai")
-    public ResponseDto<?> getOpenAiResponse(@RequestBody UserQuestionRequest userQuestionRequest) {
-        return ResponseDto.ok(openAiService.getOpenAiResponse(1L, userQuestionRequest.question()));
+    public ResponseDto<?> getOpenAiResponse(@UserId Long userId, @RequestBody UserQuestionRequest userQuestionRequest) {
+        return ResponseDto.ok(openAiService.getOpenAiResponse(userId, userQuestionRequest.question()));
     }
 }
