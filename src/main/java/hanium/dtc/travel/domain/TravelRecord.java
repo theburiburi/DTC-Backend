@@ -46,10 +46,6 @@ public class TravelRecord {
     @JoinColumn(name = "user_id")
     private User user;
 
-    @ManyToOne
-    @JoinColumn(name = "post_id")
-    private Post post;
-
     @OneToMany(mappedBy = "travelRecord", fetch = FetchType.LAZY, cascade = CascadeType.REMOVE)
     private List<Post> posts = new ArrayList<>();
 
@@ -60,7 +56,7 @@ public class TravelRecord {
         this.title = title;
     }
 
-    public TravelRecord(String title, String place, LocalDate departAt, LocalDate arriveAt, String imageUrl, User user,  Post post) {
+    public TravelRecord(String title, String place, LocalDate departAt, LocalDate arriveAt, String imageUrl, User user) {
         this.title = title;
         this.place = place;
         this.departAt = departAt;
@@ -68,7 +64,19 @@ public class TravelRecord {
         this.imageUrl = imageUrl;
         this.user = user;
         this.isScrap = true;
-        this.post = post;
+        this.posts = null;
+    }
+
+    public TravelRecord(TemporaryTravel temporaryTravel) {
+        this.title = null;
+        this.place = temporaryTravel.getPlace();
+        this.departAt = temporaryTravel.getDepartAt();
+        this.arriveAt = temporaryTravel.getArriveAt();
+        this.imageUrl = null;
+        this.isScrap = false;
+        this.user = temporaryTravel.getUser();
+        this.posts = null;
+        this.recordDetails = null;
     }
 }
 
