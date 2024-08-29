@@ -37,10 +37,7 @@ public class PostService {
     private final TravelRecordRepository travelRecordRepository;
 
     @Transactional
-    public boolean createPost(PostRequest postRequest) {
-
-        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-        Long userId = (Long) authentication.getPrincipal();
+    public boolean createPost(PostRequest postRequest, Long userId) {
 
         User user = userRepository.findById(userId)
                 .orElseThrow(() -> new CommonException(ErrorCode.NOT_FOUND_USER));
@@ -103,10 +100,7 @@ public class PostService {
     }
 
     @Transactional
-    public boolean updatePost(Long postId, PostRequest postRequest) {
-
-        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-        Long userId = (Long) authentication.getPrincipal();
+    public boolean updatePost(Long postId, PostRequest postRequest, Long userId) {
 
         Post post = postRepository.findById(postId)
                 .orElseThrow(() -> new CommonException(ErrorCode.NOT_FOUND_POST));
@@ -126,9 +120,7 @@ public class PostService {
     }
 
     @Transactional
-    public boolean deletePost(Long postId) {
-        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-        Long userId = (Long) authentication.getPrincipal();
+    public boolean deletePost(Long postId, Long userId) {
 
         Post post = postRepository.findById(postId)
                 .orElseThrow(() -> new CommonException(ErrorCode.NOT_FOUND_POST));
