@@ -7,6 +7,9 @@ import java.util.List;
 
 @Builder
 public record TravelRecommendResponse(
+        @JsonProperty("step")
+        Integer step,
+
         @JsonProperty("recommends")
         List<TravelEachRecommend> travelEachRecommends
 ) {
