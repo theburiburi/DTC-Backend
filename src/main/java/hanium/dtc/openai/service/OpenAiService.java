@@ -16,10 +16,14 @@ import hanium.dtc.user.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.security.core.parameters.P;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.client.RestClient;
 
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.LocalTime;
 import java.time.temporal.ChronoUnit;
 import java.util.Arrays;
 import java.util.List;
@@ -37,6 +41,7 @@ public class OpenAiService {
     private final TravelTimetablePrompt travelTimetablePrompt;
     private final SelectNextStepPrompt selectNextStepPrompt;
     private final TravelPlanInfoPrompt travelPlanInfoPrompt;
+    private final TravelAddressPrompt travelAddressPrompt;
     private final ResponseHandleService responseHandleService;
     private final TemporaryTravelService temporaryTravelService;
     private final UserRepository userRepository;
@@ -102,6 +107,15 @@ public class OpenAiService {
                 .getBody();
     }
 
+    public OpenAiResponse getTravelAddress(String userRequest) {
+        return openAiRestClient.post()
+                .uri("/v1/chat/completions")
+                .body(OpenAiRequest.of(openAiModel, travelAddressPrompt.getRoles(), travelAddressPrompt.getContents(), userRequest, 0.5))
+                .retrieve()
+                .toEntity(OpenAiResponse.class)
+                .getBody();
+    }
+
     @Transactional
     public void setTravelState(Long userId, String place, String userRequest) {
         User user = userRepository.findById(userId)
@@ -113,6 +127,7 @@ public class OpenAiService {
         temporaryTravel.nextStep();
     }
 
+    // 임시 여행 기록을 여행 기록으로 저장
     @Transactional
     public void saveTravelRecord(Long userId) {
         User user = userRepository.findById(userId)
@@ -126,20 +141,86 @@ public class OpenAiService {
         List<String> recommends = temporaryRecommendRepository.findAllRecommendByTemporaryTravel(temporaryTravel);
         List<String> subRecommends = recommends.subList(0, recommends.size()-1);
 
-        int i = 1;
+        Integer eachDay = 1;
         for(String recommend : subRecommends) {
             List<String> RecordDetailOfDays = responseHandleService.parseEachTimeOfDay(recommend);
+            LocalDate today = travelRecord.getDepartAt().plusDays(eachDay - 1);
             for(String eachRecordDetail : RecordDetailOfDays) {
                 String time = responseHandleService.parseTimeAndSchedule(eachRecordDetail).get(0).trim();
                 String planOfTime = responseHandleService.parseTimeAndSchedule(eachRecordDetail).get(1).trim();
-                log.info(responseHandleService.convertOpenAiResponseToString(getTravelPlanInfo(planOfTime + " & " + travelRecord.getPlace())));
+                String plan =  responseHandleService
+                        .convertOpenAiResponseToString(getTravelPlanInfo(planOfTime + " & " + travelRecord.getPlace()));
+                String planCopy = new String(plan);
+                List<String> planInfoOfTime = responseHandleService.parsePlaceAndThemaAndActive(planCopy);
+
+                final int PLACE = 0;
+                final int THEMA = 1;
+                final int PLAN = 2;
+                final int ADDRESS = 3;
+                final int LAT = 4;
+                final int LON = 5;
+
+                if(!planInfoOfTime.get(THEMA).equals("숙박") && !planInfoOfTime.get(THEMA).equals("식당")) {
+                    final int ADDRESS_ = 0;
+                    final int LAT_ = 1;
+                    final int LON_ = 2;
+
+                    List<String> planAddress = responseHandleService.parsePlaceAndThemaAndActive(
+                            responseHandleService.convertOpenAiResponseToString(
+                                    getTravelAddress(
+                                            travelRecord.getPlace() + " " + planInfoOfTime.get(PLACE))));
+
+                    if(!planAddress.get(ADDRESS_).equals("0")) {
+                        plan = plan + "^" + planAddress.get(ADDRESS_) + "^" + planAddress.get(LAT_) + "^" + planAddress.get(LON_);
+                    } else {
+                        plan = plan + "^" + "-";
+                    }
+                } else {
+                    plan = plan + "^" + "-";
+                }
+
+                planInfoOfTime = responseHandleService.parsePlaceAndThemaAndActive(plan);
+                for(String output : planInfoOfTime) {
+                    log.info(output);
+                }
+
+                if(!planInfoOfTime.get(ADDRESS).equals("-")) {
+                    RecordDetail recordDetail = RecordDetail.builder()
+                            .title(planInfoOfTime.get(PLACE))
+                            .thema(planInfoOfTime.get(THEMA))
+                            .detailAddress(planInfoOfTime.get(ADDRESS))
+                            .lat(Double.parseDouble(planInfoOfTime.get(LAT)))
+                            .lon(Double.parseDouble(planInfoOfTime.get(LON)))
+                            .startAt(LocalDateTime.of(today, LocalTime.parse(time)))
+                            .endAt(LocalDateTime.of(today, LocalTime.parse(time)))
+                            .day(eachDay)
+                            .review(planInfoOfTime.get(PLAN))
+                            .travelRecord(travelRecord)
+                            .build();
+
+                    recordDetailRepository.save(recordDetail);
+                } else {
+                    RecordDetail recordDetail = RecordDetail.builder()
+                            .title(planInfoOfTime.get(PLACE))
+                            .thema(planInfoOfTime.get(THEMA))
+                            .detailAddress("-")
+                            .lat(null)
+                            .lon(null)
+                            .startAt(LocalDateTime.of(today, LocalTime.parse(time)))
+                            .endAt(LocalDateTime.of(today, LocalTime.parse(time)))
+                            .day(eachDay)
+                            .review(planInfoOfTime.get(PLAN))
+                            .travelRecord(travelRecord)
+                            .build();
+
+                    recordDetailRepository.save(recordDetail);
+                }
             }
-            i++;
+            eachDay++;
         }
-
-
     }
 
+    // STEP 1
     @Transactional
     public TravelListResponse getListOfTravel(Long userId, String userRequest) {
         User user = userRepository.findById(userId)
@@ -178,6 +259,7 @@ public class OpenAiService {
                 .build();
     }
 
+    // STEP 2
     @Transactional
     public TravelRecommendResponse createTravelTimeTable(Long userId, String userRequest) {
         User user = userRepository.findById(userId)
@@ -225,8 +307,9 @@ public class OpenAiService {
                 .build();
     }
 
+    // STEP 3
     @Transactional
-    public String fixTravelTimeTable(Long userId, String userRequest) {
+    public OpenAiResponse fixTravelTimeTable(Long userId, String userRequest) {
         User user = userRepository.findById(userId)
                 .orElseThrow(() -> new CommonException(ErrorCode.NOT_FOUND_USER));
         TemporaryTravel temporaryTravel = temporaryTravelRepository.findByUser(user);
@@ -235,6 +318,9 @@ public class OpenAiService {
             // 만약 더 이상 여행 일정을 수정하지 않는다면 다음과 같은 로직 진행
             saveTravelRecord(userId);
             return null;
+        } else {
+            // 여행 일정을 수정하고자 한다면 다음과 같은 로직 진행
+
         }
 
         return null;

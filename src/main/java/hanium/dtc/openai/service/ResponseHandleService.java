@@ -34,11 +34,15 @@ public class ResponseHandleService {
     }
 
     public List<String> parseEachTimeOfDay(String input) {
-        return new ArrayList<>(Arrays.asList(input.split("\n")));
+        return new ArrayList<>(Arrays.asList(input.split("<br />")));
     }
 
     public List<String> parseTimeAndSchedule(String input) {
         return new ArrayList<>(Arrays.asList(input.split("-")));
+    }
+
+    public List<String> parsePlaceAndThemaAndActive(String input) {
+        return new ArrayList<>(Arrays.asList(input.split("\\^")));
     }
 
     public String convertOpenAiResponseToString(OpenAiResponse openAiResponse) {

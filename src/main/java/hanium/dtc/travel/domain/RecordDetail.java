@@ -43,6 +43,9 @@ public class RecordDetail {
     @Column(name = "day")
     private Integer day;
 
+    @Column(name = "review")
+    private String review;
+
     @ManyToOne
     @JoinColumn(name = "travel_id")
     private TravelRecord travelRecord;
@@ -70,5 +73,20 @@ public class RecordDetail {
         this.travelRecord = travelRecord;
     }
 
+    @Builder
+    public RecordDetail(String title, String thema, String detailAddress,
+                        Double lat, Double lon, LocalDateTime startAt, LocalDateTime endAt,
+                        Integer day, TravelRecord travelRecord, String review) {
+        this.title = title;
+        this.thema = thema;
+        this.detailAddress = detailAddress;
+        this.lat = lat;
+        this.lon = lon;
+        this.startAt = startAt;
+        this.endAt = endAt;
+        this.day = day;
+        this.travelRecord = travelRecord;
+        this.review = review;
+    }
 }
 
