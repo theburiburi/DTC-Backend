@@ -7,6 +7,9 @@ import java.util.List;
 
 @Builder
 public record TravelListResponse(
+        @JsonProperty("step")
+        Integer step,
+
         @JsonProperty("description")
         String description,
 

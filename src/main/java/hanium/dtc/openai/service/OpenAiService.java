@@ -165,6 +165,7 @@ public class OpenAiService {
         }
 
         return TravelListResponse.builder()
+                .step(1)
                 .description(placeDescription)
                 .placeDescriptionResponses(user.getTemporaryTravel().getTemporaryPlaces().stream()
                         .map(temporaryTravel ->
@@ -219,6 +220,7 @@ public class OpenAiService {
                                 .build()).toList();
 
         return TravelRecommendResponse.builder()
+                .step(2)
                 .travelEachRecommends(travelEachRecommends.subList(0, travelEachRecommends.size()-1))
                 .build();
     }
