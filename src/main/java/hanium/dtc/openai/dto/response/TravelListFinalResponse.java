@@ -6,14 +6,15 @@ import lombok.Builder;
 import java.util.List;
 
 @Builder
-public record TravelListFixResponse(
+public record TravelListFinalResponse(
+
         @JsonProperty("step")
         Integer step,
 
-        @JsonProperty("fixed_message")
+        @JsonProperty("final_message")
         String message,
 
-        @JsonProperty("fixed_recommends")
+        @JsonProperty("final_recommends")
         List<TravelEachRecommend> travelEachRecommends
 ) {
 }

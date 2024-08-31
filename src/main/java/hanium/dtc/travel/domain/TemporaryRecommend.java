@@ -19,7 +19,7 @@ public class TemporaryRecommend {
     @Column(name = "day")
     private String day;
 
-    @Column(name = "recommend")
+    @Column(name = "recommend", length = 1000)
     private String recommend;
 
     @ManyToOne
