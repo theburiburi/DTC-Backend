@@ -19,7 +19,10 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDate;
+import java.time.format.TextStyle;
+import java.util.ArrayList;
 import java.util.List;
+import java.util.Locale;
 import java.util.stream.Collectors;
 import java.util.Optional;
 
@@ -98,12 +101,40 @@ public class TravelRecordService {
 
     @Transactional(readOnly = true)
     public TravelRecordDetailResponse travelRecordDetail(Long travelId, Integer day) {
-        TravelRecord travelRecord = travelRecordRepository.findById(travelId).orElseThrow(()
-                ->new CommonException(ErrorCode.NOT_FOUND_TRAVEL));
+        TravelRecord travelRecord = travelRecordRepository.findById(travelId)
+                .orElseThrow(() -> new CommonException(ErrorCode.NOT_FOUND_TRAVEL));
         List<RecordDetail> recordDetails = recordDetailRepository.findByTravelRecordAndDay(travelRecord, day)
-                .orElseThrow(()-> new CommonException(ErrorCode.NOT_FOUND_TRAVELDETAIL));
+                .orElseThrow(() -> new CommonException(ErrorCode.NOT_FOUND_TRAVELDETAIL));
+
+        LocalDate today = travelRecord.getDepartAt().plusDays(day - 1);
+        ArrayList<DateResponse> dateResponses = new ArrayList<>();
+        // 3일 전부터 3일 후까지의 날짜와 요일 출력
+        for (int i = -3; i <= 3; i++) {
+            LocalDate targetDate = today.plusDays(i);
+            String dayOfWeek = targetDate.getDayOfWeek().getDisplayName(TextStyle.SHORT, Locale.ENGLISH);
+            Integer dayOfMonth = targetDate.getDayOfMonth();
+
+            String dday;
+            Integer dayInt;
+            Integer plusDay = day + i;
+            if(targetDate.isBefore(travelRecord.getDepartAt()) || targetDate.isAfter(travelRecord.getArriveAt())) {
+                dday = null;
+                dayInt = -1;
+            } else {
+                dday = "Day" + " " + plusDay;
+                dayInt = day + i;
+            }
+
+            dateResponses.add(DateResponse.builder()
+                            .date(dayOfMonth)
+                            .day(dayOfWeek)
+                            .dday(dday)
+                            .dayInt(dayInt)
+                    .build());
+        }
 
         TravelRecordDetailResponse travelRecordDetailResponse = TravelRecordDetailResponse.builder()
+                .dateResponses(dateResponses)
                 .travelDetailResponse(TravelDetailResponse.builder()
                         .title(travelRecord.getTitle())
                         .departAt(travelRecord.getDepartAt())
@@ -111,13 +142,15 @@ public class TravelRecordService {
                         .build())
                 .recordDetailResponses(recordDetails.stream()
                         .map(RecordDetail-> RecordDetailResponse.builder()
-                                .title(RecordDetail.getTitle().toString())
-                                .thema(RecordDetail.getThema().toString())
-                                .detailAddress(RecordDetail.getDetailAddress().toString())
+                                .title(RecordDetail.getTitle())
+                                .thema(RecordDetail.getThema())
+                                .detailAddress(RecordDetail.getDetailAddress())
+                                .plan(RecordDetail.getReview())
                                 .startAt(RecordDetail.getStartAt())
                                 .endAt(RecordDetail.getEndAt())
                                 .build())
-                        .toList()).build();
+                        .toList())
+                .build();
         return travelRecordDetailResponse;
     }
 

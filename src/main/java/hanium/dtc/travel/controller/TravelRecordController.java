@@ -30,7 +30,6 @@ public class TravelRecordController {
         return ResponseDto.ok(response);
     }
 
-
     @GetMapping("/mypage/record")
     public ResponseDto<?> getTravelRecord(@UserId Long userId) {
         return ResponseDto.ok(travelRecordService.travelRecordList(userId));
@@ -52,8 +51,10 @@ public class TravelRecordController {
         return ResponseDto.ok(response);
     }
 
-    @GetMapping("/mypage/{travelId}/{day}")
-    public ResponseDto<?> getTravelDetail(@PathVariable Long travelId, @PathVariable Integer day) {
+    @GetMapping("/mypage/{travelId}")
+    public ResponseDto<?> getTravelDetail(
+            @PathVariable Long travelId,
+            @RequestParam(value = "day", required = false, defaultValue = "1") Integer day) {
         return ResponseDto.ok(travelRecordService.travelRecordDetail(travelId, day));
     }
 
