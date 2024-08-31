@@ -16,7 +16,6 @@ import hanium.dtc.user.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.security.core.parameters.P;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.client.RestClient;
@@ -27,8 +26,6 @@ import java.time.LocalTime;
 import java.time.format.DateTimeFormatter;
 import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Date;
 import java.util.List;
 
 @Slf4j
@@ -142,7 +139,7 @@ public class OpenAiService {
 
     // 임시 여행 기록을 여행 기록으로 저장
     @Transactional
-    public void saveTravelRecord(Long userId) {
+    public Long saveTravelRecord(Long userId) {
         User user = userRepository.findById(userId)
                 .orElseThrow(() -> new CommonException(ErrorCode.NOT_FOUND_USER));
         TemporaryTravel temporaryTravel = temporaryTravelRepository.findByUser(user);
@@ -228,6 +225,7 @@ public class OpenAiService {
             }
             eachDay++;
         }
+        return travelRecord.getId();
     }
 
     // STEP 1
@@ -324,10 +322,9 @@ public class OpenAiService {
                 .orElseThrow(() -> new CommonException(ErrorCode.NOT_FOUND_USER));
         TemporaryTravel temporaryTravel = temporaryTravelRepository.findByUser(user);
 
-
         if(responseHandleService.convertOpenAiResponseToString(getNextStep(userRequest)).equals("0")) {
             // 만약 더 이상 여행 일정을 수정하지 않는다면 다음과 같은 로직 진행
-            saveTravelRecord(userId);
+            Long travelId = saveTravelRecord(userId);
             temporaryTravel.nextStep();
 
             List<TemporaryRecommend> temporaryRecommends = temporaryRecommendRepository.findAll();
@@ -336,6 +333,7 @@ public class OpenAiService {
             return TravelListFinalResponse.builder()
                     .step(temporaryTravel.getQuestionStep())
                     .message("최종 여행 일정은 다음과 같습니다.")
+                    .travelId(travelId)
                     .travelEachRecommends(temporarySubRecommends.stream().map(
                                     Recommend ->
                                             TravelEachRecommend.builder()

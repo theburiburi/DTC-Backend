@@ -24,6 +24,12 @@ public record RecordDetailResponse (
         LocalDateTime startAt,
 
         @JsonProperty("end_at")
-        LocalDateTime endAt
+        LocalDateTime endAt,
+
+        @JsonProperty("lat")
+        Double lat,
+
+        @JsonProperty("lon")
+        Double lon
 ) {
 }

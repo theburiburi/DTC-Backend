@@ -14,6 +14,9 @@ public record TravelListFinalResponse(
         @JsonProperty("final_message")
         String message,
 
+        @JsonProperty("travel_id")
+        Long travelId,
+
         @JsonProperty("final_recommends")
         List<TravelEachRecommend> travelEachRecommends
 ) {
