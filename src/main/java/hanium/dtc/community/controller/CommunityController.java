@@ -1,5 +1,6 @@
 package hanium.dtc.community.controller;
 
+import hanium.dtc.community.dto.response.HotResponse;
 import hanium.dtc.community.dto.response.PostResponse;
 import hanium.dtc.community.dto.response.PaginatedResponse;
 import hanium.dtc.community.service.CommunityService;
@@ -61,4 +62,11 @@ public class CommunityController {
 
         return ResponseDto.ok(paginatedResponse);
     }
+
+    @GetMapping("/hot/top")
+    public ResponseDto<List<HotResponse>> getTop3HotPosts() {
+        List<HotResponse> top3Posts = communityService.getTop3HotPosts();
+        return ResponseDto.ok(top3Posts);
+    }
+
 }

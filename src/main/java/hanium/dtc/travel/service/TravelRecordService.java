@@ -44,12 +44,12 @@ public class TravelRecordService {
                         .filter(travelRecord -> travelRecord.getDepartAt().isBefore(filterDate)
                                 && travelRecord.getIsScrap().equals(Boolean.FALSE))
                         .map(travelRecord -> TravelRecordResponse.builder()
-                                .travelRecordId(travelRecord.getId())
                                 .title(travelRecord.getTitle().toString())
                                 .place(travelRecord.getPlace().toString())
                                 .departAt(travelRecord.getDepartAt())
                                 .arriveAt(travelRecord.getArriveAt())
                                 .imageUrl(travelRecord.getImageUrl())
+                                .travelRecordId(travelRecord.getId())
                                 .build())
                         .toList()).build();
         return travelRecordListResponse;
