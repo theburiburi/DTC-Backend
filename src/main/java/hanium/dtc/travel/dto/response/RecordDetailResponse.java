@@ -17,6 +17,9 @@ public record RecordDetailResponse (
         @JsonProperty("detail_address")
         String detailAddress,
 
+        @JsonProperty("plan")
+        String plan,
+
         @JsonProperty("start_at")
         LocalDateTime startAt,
 
