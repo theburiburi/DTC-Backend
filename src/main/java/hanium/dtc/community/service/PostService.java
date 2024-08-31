@@ -67,6 +67,7 @@ public class PostService {
                     .departAt(travelRecord.getDepartAt())
                     .arriveAt(travelRecord.getArriveAt())
                     .imageUrl(travelRecord.getImageUrl())
+                    .travelRecordId(travelRecord.getId())
                     .build();
         }
 
