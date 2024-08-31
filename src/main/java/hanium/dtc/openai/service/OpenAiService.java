@@ -322,7 +322,7 @@ public class OpenAiService {
 
     // STEP 3
     @Transactional
-    public TravelListFixResponse fixTravelTimeTable(Long userId, String userRequest) {
+    public Object fixTravelTimeTable(Long userId, String userRequest) {
         User user = userRepository.findById(userId)
                 .orElseThrow(() -> new CommonException(ErrorCode.NOT_FOUND_USER));
         TemporaryTravel temporaryTravel = temporaryTravelRepository.findByUser(user);
@@ -335,7 +335,7 @@ public class OpenAiService {
 
             List<TemporaryRecommend> temporaryRecommends = temporaryRecommendRepository.findAll();
             List<TemporaryRecommend> temporarySubRecommends = temporaryRecommends.subList(0, temporaryRecommends.size()-1);
-            return TravelListFixResponse.builder()
+            return TravelListFinalResponse.builder()
                     .step(temporaryTravel.getQuestionStep())
                     .message("최종 여행 일정은 다음과 같습니다.")
                     .travelEachRecommends(temporarySubRecommends.stream().map(
