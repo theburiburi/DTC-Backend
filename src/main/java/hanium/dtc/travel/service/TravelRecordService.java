@@ -148,6 +148,8 @@ public class TravelRecordService {
                                 .plan(RecordDetail.getReview())
                                 .startAt(RecordDetail.getStartAt())
                                 .endAt(RecordDetail.getEndAt())
+                                .lat(RecordDetail.getLat())
+                                .lon(RecordDetail.getLon())
                                 .build())
                         .toList())
                 .build();
