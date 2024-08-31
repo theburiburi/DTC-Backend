@@ -24,8 +24,11 @@ import org.springframework.web.client.RestClient;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
+import java.time.format.DateTimeFormatter;
 import java.time.temporal.ChronoUnit;
+import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Date;
 import java.util.List;
 
 @Slf4j
@@ -42,6 +45,7 @@ public class OpenAiService {
     private final SelectNextStepPrompt selectNextStepPrompt;
     private final TravelPlanInfoPrompt travelPlanInfoPrompt;
     private final TravelAddressPrompt travelAddressPrompt;
+    private final TravelCheckDayPrompt travelCheckDayPrompt;
     private final ResponseHandleService responseHandleService;
     private final TemporaryTravelService temporaryTravelService;
     private final UserRepository userRepository;
@@ -111,6 +115,15 @@ public class OpenAiService {
         return openAiRestClient.post()
                 .uri("/v1/chat/completions")
                 .body(OpenAiRequest.of(openAiModel, travelAddressPrompt.getRoles(), travelAddressPrompt.getContents(), userRequest, 0.5))
+                .retrieve()
+                .toEntity(OpenAiResponse.class)
+                .getBody();
+    }
+
+    public OpenAiResponse getTravelDay(String userRequest) {
+        return openAiRestClient.post()
+                .uri("/v1/chat/completions")
+                .body(OpenAiRequest.of(openAiModel, travelCheckDayPrompt.getRoles(), travelCheckDayPrompt.getContents(), userRequest, 0.5))
                 .retrieve()
                 .toEntity(OpenAiResponse.class)
                 .getBody();
@@ -251,7 +264,7 @@ public class OpenAiService {
                 .placeDescriptionResponses(user.getTemporaryTravel().getTemporaryPlaces().stream()
                         .map(temporaryTravel ->
                                 PlaceDescriptionResponse.builder()
-                                        .placeId(temporaryTravel.getId())
+                                        .id(temporaryTravel.getId())
                                         .place(temporaryTravel.getPlace())
                                         .description(temporaryTravel.getDescription())
                                         .build())
@@ -283,47 +296,87 @@ public class OpenAiService {
                 .parseTimeTable(responseHandleService
                         .convertOpenAiResponseToString(getTravelTimeTable(placeString)));
 
+        ArrayList<TravelEachRecommend> travelEachRecommends = new ArrayList<>();
         for(String eachTime : timeTable) {
             TemporaryRecommend temporaryRecommend = TemporaryRecommend.builder()
                     .day(responseHandleService.parseTimeAndTravel(eachTime).get(0).trim())
                     .recommend(responseHandleService.parseTimeAndTravel(eachTime).get(1).trim())
                     .temporaryTravel(temporaryTravel)
                     .build();
-
             temporaryRecommendRepository.save(temporaryRecommend);
+
+            travelEachRecommends.add(TravelEachRecommend.builder()
+                    .id(temporaryRecommend.getId())
+                    .day(temporaryRecommend.getDay())
+                    .plan(temporaryRecommend.getRecommend())
+                    .build());
         }
         temporaryTravel.nextStep();
-
-        List<TravelEachRecommend> travelEachRecommends = timeTable.stream()
-                .map(table ->
-                        TravelEachRecommend.builder()
-                                .day(responseHandleService.parseTimeAndTravel(table).get(0).trim())
-                                .plan(responseHandleService.parseTimeAndTravel(table).get(1).trim())
-                                .build()).toList();
+        travelEachRecommends.remove(travelEachRecommends.size() - 1);
 
         return TravelRecommendResponse.builder()
                 .step(2)
-                .travelEachRecommends(travelEachRecommends.subList(0, travelEachRecommends.size()-1))
+                .travelEachRecommends(travelEachRecommends)
                 .build();
     }
 
     // STEP 3
     @Transactional
-    public OpenAiResponse fixTravelTimeTable(Long userId, String userRequest) {
+    public TravelListFixResponse fixTravelTimeTable(Long userId, String userRequest) {
         User user = userRepository.findById(userId)
                 .orElseThrow(() -> new CommonException(ErrorCode.NOT_FOUND_USER));
         TemporaryTravel temporaryTravel = temporaryTravelRepository.findByUser(user);
 
+
         if(responseHandleService.convertOpenAiResponseToString(getNextStep(userRequest)).equals("0")) {
             // 만약 더 이상 여행 일정을 수정하지 않는다면 다음과 같은 로직 진행
             saveTravelRecord(userId);
-            return null;
+            temporaryTravel.nextStep();
+
+            List<TemporaryRecommend> temporaryRecommends = temporaryRecommendRepository.findAll();
+            List<TemporaryRecommend> temporarySubRecommends = temporaryRecommends.subList(0, temporaryRecommends.size()-1);
+            return TravelListFixResponse.builder()
+                    .step(temporaryTravel.getQuestionStep())
+                    .message("최종 여행 일정은 다음과 같습니다.")
+                    .travelEachRecommends(temporarySubRecommends.stream().map(
+                                    Recommend ->
+                                            TravelEachRecommend.builder()
+                                                    .id(Recommend.getId())
+                                                    .day(Recommend.getDay())
+                                                    .plan(Recommend.getRecommend()).build())
+                            .toList())
+                    .build();
         } else {
             // 여행 일정을 수정하고자 한다면 다음과 같은 로직 진행
+            DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
+            String schedule = "(여행 일정 : " + temporaryTravel.getDepartAt().format(formatter) + " ~ " + temporaryTravel.getArriveAt().format(formatter) + ") " + userRequest;
 
+            TemporaryRecommend temporaryRecommend = temporaryRecommendRepository
+                    .findByDayAndTemporaryTravel(
+                            responseHandleService.convertOpenAiResponseToString(getTravelDay(schedule)),
+                            temporaryTravel
+                    ).get(0);
+
+            String reRecommend = responseHandleService.convertOpenAiResponseToString(
+                    getNextStep(userRequest + temporaryRecommend.getRecommend())
+            );
+            temporaryRecommend.updateRecommend(reRecommend);
+
+            List<TemporaryRecommend> temporaryRecommends = temporaryRecommendRepository.findAll();
+            List<TemporaryRecommend> temporarySubRecommends = temporaryRecommends.subList(0, temporaryRecommends.size()-1);
+            return TravelListFixResponse.builder()
+                    .step(temporaryTravel.getQuestionStep())
+                    .message("수정된 여행일정은 다음과 같습니다.")
+                    .travelEachRecommends(temporarySubRecommends.stream().map(
+                            Recommend ->
+                                    TravelEachRecommend.builder()
+                                            .id(Recommend.getId())
+                                            .day(Recommend.getDay())
+                                            .plan(Recommend.getRecommend()).build())
+                            .toList())
+                    .build();
         }
 
-        return null;
     }
 
     @Transactional

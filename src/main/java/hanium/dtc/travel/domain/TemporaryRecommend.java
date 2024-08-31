@@ -32,4 +32,8 @@ public class TemporaryRecommend {
         this.recommend = recommend;
         this. temporaryTravel = temporaryTravel;
     }
+
+    public void updateRecommend(String recommend) {
+        this.recommend = recommend;
+    }
 }

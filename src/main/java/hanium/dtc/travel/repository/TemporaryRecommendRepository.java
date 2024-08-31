@@ -11,4 +11,7 @@ import java.util.List;
 public interface TemporaryRecommendRepository extends JpaRepository<TemporaryRecommend, Long> {
     @Query("SELECT recommend FROM TemporaryRecommend WHERE temporaryTravel = :travelId")
     List<String> findAllRecommendByTemporaryTravel(@Param("travelId") TemporaryTravel temporaryTravel);
+
+    @Query("SELECT t FROM TemporaryRecommend t WHERE t.day = :day AND t.temporaryTravel = :temporaryTravel")
+    List<TemporaryRecommend> findByDayAndTemporaryTravel(@Param("day") String day, @Param("temporaryTravel") TemporaryTravel temporaryTravel);
 }

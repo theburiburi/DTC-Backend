@@ -5,8 +5,8 @@ import lombok.Builder;
 
 @Builder
 public record PlaceDescriptionResponse(
-        @JsonProperty("place_id")
-        Long placeId,
+        @JsonProperty("id")
+        Long id,
 
         @JsonProperty("place")
         String place,
