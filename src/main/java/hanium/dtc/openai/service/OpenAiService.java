@@ -158,10 +158,10 @@ public class OpenAiService {
         for(String recommend : subRecommends) {
             List<String> RecordDetailOfDays = responseHandleService.parseEachTimeOfDay(recommend);
             LocalDate today = travelRecord.getDepartAt().plusDays(eachDay - 1);
-            for(String eachRecordDetail : RecordDetailOfDays) {
+            for (String eachRecordDetail : RecordDetailOfDays) {
                 String time = responseHandleService.parseTimeAndSchedule(eachRecordDetail).get(0).trim();
                 String planOfTime = responseHandleService.parseTimeAndSchedule(eachRecordDetail).get(1).trim();
-                String plan =  responseHandleService
+                String plan = responseHandleService
                         .convertOpenAiResponseToString(getTravelPlanInfo(planOfTime + " & " + travelRecord.getPlace()));
                 String planCopy = new String(plan);
                 List<String> planInfoOfTime = responseHandleService.parsePlaceAndThemaAndActive(planCopy);
@@ -173,7 +173,7 @@ public class OpenAiService {
                 final int LAT = 4;
                 final int LON = 5;
 
-                if(!planInfoOfTime.get(THEMA).equals("숙박") && !planInfoOfTime.get(THEMA).equals("식당")) {
+                if (!planInfoOfTime.get(THEMA).equals("숙박") && !planInfoOfTime.get(THEMA).equals("식당")) {
                     final int ADDRESS_ = 0;
                     final int LAT_ = 1;
                     final int LON_ = 2;
@@ -183,7 +183,7 @@ public class OpenAiService {
                                     getTravelAddress(
                                             travelRecord.getPlace() + " " + planInfoOfTime.get(PLACE))));
 
-                    if(!planAddress.get(ADDRESS_).equals("0")) {
+                    if (!planAddress.get(ADDRESS_).equals("0")) {
                         plan = plan + "^" + planAddress.get(ADDRESS_) + "^" + planAddress.get(LAT_) + "^" + planAddress.get(LON_);
                     } else {
                         plan = plan + "^" + "-";
@@ -193,11 +193,8 @@ public class OpenAiService {
                 }
 
                 planInfoOfTime = responseHandleService.parsePlaceAndThemaAndActive(plan);
-                for(String output : planInfoOfTime) {
-                    log.info(output);
-                }
 
-                if(!planInfoOfTime.get(ADDRESS).equals("-")) {
+                if (!planInfoOfTime.get(ADDRESS).equals("-")) {
                     RecordDetail recordDetail = RecordDetail.builder()
                             .title(planInfoOfTime.get(PLACE))
                             .thema(planInfoOfTime.get(THEMA))
@@ -335,6 +332,7 @@ public class OpenAiService {
 
             List<TemporaryRecommend> temporaryRecommends = temporaryRecommendRepository.findAll();
             List<TemporaryRecommend> temporarySubRecommends = temporaryRecommends.subList(0, temporaryRecommends.size()-1);
+            temporaryTravelRepository.delete(temporaryTravel);
             return TravelListFinalResponse.builder()
                     .step(temporaryTravel.getQuestionStep())
                     .message("최종 여행 일정은 다음과 같습니다.")
