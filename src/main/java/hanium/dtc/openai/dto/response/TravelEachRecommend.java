@@ -5,6 +5,9 @@ import lombok.Builder;
 
 @Builder
 public record TravelEachRecommend(
+        @JsonProperty("id")
+        Long id,
+
         @JsonProperty("day")
         String day,
 
