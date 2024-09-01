@@ -72,7 +72,7 @@ public class TravelRecord {
         this.place = temporaryTravel.getPlace();
         this.departAt = temporaryTravel.getDepartAt();
         this.arriveAt = temporaryTravel.getArriveAt();
-        this.imageUrl = null;
+        this.imageUrl = "https://i2.wp.com/www.agoda.com/wp-content/uploads/2021/02/Donggung-Palace-and-Wolji-Pond-Gyeongju-si-attractions-South-Korea.jpg?ssl=1";
         this.isScrap = false;
         this.user = temporaryTravel.getUser();
         this.posts = null;
