@@ -8,6 +8,9 @@ import java.time.LocalDateTime;
 
 @Builder
 public record RecordDetailResponse (
+        @JsonProperty("id")
+        Long id,
+
         @JsonProperty("title")
         String title,
 

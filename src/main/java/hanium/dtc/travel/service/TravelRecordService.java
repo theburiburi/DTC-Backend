@@ -100,6 +100,19 @@ public class TravelRecordService {
     }
 
     @Transactional(readOnly = true)
+    public DetailInfoResponse getDetailInfo(Long userId, Long detailId) {
+        RecordDetail recordDetail = recordDetailRepository.findById(detailId)
+                .orElseThrow(() -> new CommonException(ErrorCode.NOT_FOUND_TRAVELDETAIL));
+
+        return DetailInfoResponse.builder()
+                .title(recordDetail.getTitle())
+                .thema(recordDetail.getThema())
+                .address(recordDetail.getDetailAddress())
+                .lat(recordDetail.getLat())
+                .lon(recordDetail.getLon()).build();
+    }
+
+    @Transactional(readOnly = true)
     public TravelRecordDetailResponse travelRecordDetail(Long travelId, Integer day) {
         TravelRecord travelRecord = travelRecordRepository.findById(travelId)
                 .orElseThrow(() -> new CommonException(ErrorCode.NOT_FOUND_TRAVEL));
@@ -142,6 +155,7 @@ public class TravelRecordService {
                         .build())
                 .recordDetailResponses(recordDetails.stream()
                         .map(RecordDetail-> RecordDetailResponse.builder()
+                                .id(RecordDetail.getId())
                                 .title(RecordDetail.getTitle())
                                 .thema(RecordDetail.getThema())
                                 .detailAddress(RecordDetail.getDetailAddress())
