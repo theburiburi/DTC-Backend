@@ -10,6 +10,7 @@ import hanium.dtc.travel.service.TravelRecordService;
 import hanium.dtc.travel.dto.response.TravelRecordResponse;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.stereotype.Repository;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -45,10 +46,9 @@ public class TravelRecordController {
         return ResponseDto.ok(travelRecordService.getMyScrapList(userId));
     }
 
-    @DeleteMapping("/mypage/scrap/{postId}/{travelId}")
-    public ResponseDto<ScrapResponse> removeScrap(@PathVariable Long postId, @PathVariable Long travelId,  @UserId Long userId) {
-        ScrapResponse response = travelRecordService.removeScrap(postId, travelId, userId);
-        return ResponseDto.ok(response);
+    @GetMapping("/record/{detailId}")
+    public ResponseDto<?> getDetailInfo(@UserId Long userId, @PathVariable Long detailId) {
+        return ResponseDto.ok(travelRecordService.getDetailInfo(userId, detailId));
     }
 
     @GetMapping("/mypage/{travelId}")
@@ -56,6 +56,12 @@ public class TravelRecordController {
             @PathVariable Long travelId,
             @RequestParam(value = "day", required = false, defaultValue = "1") Integer day) {
         return ResponseDto.ok(travelRecordService.travelRecordDetail(travelId, day));
+    }
+
+    @DeleteMapping("/mypage/scrap/{postId}/{travelId}")
+    public ResponseDto<ScrapResponse> removeScrap(@PathVariable Long postId, @PathVariable Long travelId,  @UserId Long userId) {
+        ScrapResponse response = travelRecordService.removeScrap(postId, travelId, userId);
+        return ResponseDto.ok(response);
     }
 
     @PatchMapping("/mypage/{travelId}")

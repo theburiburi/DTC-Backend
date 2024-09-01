@@ -35,7 +35,7 @@ public class TravelRecord {
     @Column(name = "arrive_at")
     private LocalDate arriveAt;
 
-    @Column(name = "image_url")
+    @Column(name = "image_url", length = 1200)
     private String imageUrl;
 
     @Setter
